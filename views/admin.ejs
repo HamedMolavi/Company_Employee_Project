@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <%- include('./common/header.ejs'); %>
+        <link type="image/png" sizes="96x96" rel="icon" href="/Images/icons/fav/Web/dashboard-96.png">
+        <link rel="stylesheet" type="text/css" href="/styles/admin.css">
+        <title>
+            <%= username %> | Dashboard
+        </title>
+</head>
+
+<body class="bg-light position-relative">
+
+        <%- include('./common/navbar.ejs', {arr:[ {id: "dashboardLink" ,func: "load('dashboard')" , name:"Dashboard", i:"fas fa-tachometer-alt"}, {id: "companyLink" , func: "load('company')" , name:"Companies", i:"fas fa-building"}, {func: "load('employee')" ,id: "employeeLink" , name:"Employees", i:"fas fa-user-tie"} ]}); %>
+            <%- include('./common/alert.ejs'); %>
+            <%- include('./common/confirmModal.ejs'); %>
+                <%- include('./common/alert2.ejs'); %>
+                <%- include('./common/companyModal.ejs'); %>
+                        <%- include('./common/employeeModal.ejs'); %>
+                <script src="/scripts/adminModal.js"></script>
+                    <div id="tableWrapper" class="container-lg bootstrap snippets bootdey mt-4"></div>
+
+                    <div id="info" aria-disabled="true" style="visibility: hidden; display: none;"
+                        username="<%= username %>" _id="<%= id %>" password="<%= password %>" day='<%= day %>'></div>
+                    <%- include('./common/footer.ejs'); %>
+                        <script src="/scripts/admin.js"></script>
+                        <script src="/scripts/setTable.js"></script>
+                        <script src="/scripts/companyTable.js"></script>
+                        <script src="/scripts/employeeTable.js"></script>
+                        <link rel="stylesheet" type="text/css" href="/styles/employeeTable.css">
+</body>
+
+</html>

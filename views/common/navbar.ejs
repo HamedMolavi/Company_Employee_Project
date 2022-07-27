@@ -1,0 +1,40 @@
+<nav class="navbar navbar-expand-custom navbar-mainbg">
+    <a class="navbar-brand navbar-logo" href="#"><img id="imgProfile" src="/Images/icons/admins/man-icon.png"
+            alt="profile icon"></a>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent" style="padding-left: 1rem; flex-grow: 0;">
+        <ul class="navbar-nav ml-auto">
+            <div class="hori-selector">
+                <!-- <div class="left"></div>
+                <div class="right"></div> -->
+            </div>
+                    <% for( let i = 0; i < arr.length; i++ ) { %>
+                    <li class="nav-item">
+                        <a id="<%= arr[i].id %>" class="nav-link" href="javascript:<%= arr[i].func %>;"><i class="<%= arr[i].i %>"></i>
+                            <%= arr[i].name %>
+                            <% console.log(arr[i].name); %> 
+                        </a>
+                    </li>
+                    <% } %>
+                        
+        </ul>
+    </div>
+    <div class="ms-auto">
+        <div class="cntr-innr">
+            <label class="search" for="inpt_search">
+                <input id="inpt_search" type="text" tabindex="900" />
+            </label>
+        </div>
+    </div>
+    <div class="ms-1 pe-5 d-flex align-items-center">
+        <!-- <span class="me-2 lable-night anime-night"><i class="fa fa-moon-o"></i></span> -->
+        <label class="myswitchBtnLable">
+            <input id="switchDayNightBtn" class="myswitchBtn" type="checkbox">
+            <span id="day-night" class="mysliderBtn roundToggle"></span>
+        </label>
+    </div>
+    <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false"
+        aria-label="Toggle navigation">
+        <i class="fas fa-bars text-white"></i>
+    </button>
+</nav>

@@ -1,0 +1,92 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    margin: 0;
+}
+
+html {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    min-width: 100%;
+    min-height: 100%;
+    width: fit-content;
+    height: fit-content;
+}
+
+.fs-7 {
+    font-size: 0.8rem !important;
+}
+
+.notify {
+    height: 0;
+    padding: 0;
+    transition: padding .2s;
+    z-index: 1000;
+    user-select: none;
+}
+
+.active2 {
+    height: fit-content;
+    padding: 1rem !important;
+}
+
+
+.bg-white {
+    background-color: #ffffff !important;
+}
+
+.bg-black{
+    background-color: #000000 !important;
+}
+
+.Modal {
+    top: -200%;
+    transition: all 0.5s ease;
+}
+
+
+.placeholder-primary::placeholder {
+    color: darkblue;
+}
+
+.placeholder-white::placeholder {
+    color: white;
+}
+.placeholder-black::placeholder {
+    color: black;
+}
+input,
+button {
+    box-shadow: none !important;
+}
+
+.headmodal {
+    font-family: "Trebuchet MS", sans-serif;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    border-bottom: 1.5px solid darkmagenta;
+}
+
+.bg-glass-light {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.bg-glass-dark {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
