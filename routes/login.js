@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { dbQueryPromise } = require('../database/queryPromises');
 const { readTicket, writeTicket } = require('../tools/tickets');
+const { Session, tokenChecker } = require('../utils/session');
 
 
 
@@ -10,17 +11,11 @@ module.exports = function ({ database }) {
         res.render('login');
     });
     router.get('/dashboard', (req, res) => {
-        readTicket(req.query.ticket)
-            .then(data => {
-                res.render('admin', { id: data.id, username: data.username, password: data.password, day: data.day });
-            })
-            .catch(err => {
-                console.log(`Reading from database (${__filename})\n`, err);
-                err.errno === -4058
-                    ? res.status(402).json({ success: false, message: 'No user returned from server.' })
-                    : res.status(500).json({ success: false, message: 'Something went wrong.' });//render error
-            });
-        ;
+        res.render('admin');
+    });
+    router.get('/userInfo', tokenChecker(database), (req, res) => {
+        console.log(res.locals.user);
+        res.json({success: true, results: res.locals.user});
     });
     router.post('/', (req, res) => {
         let searchQuery = ['SELECT * FROM `admins` where `username`=? and `password` =?',
@@ -28,15 +23,9 @@ module.exports = function ({ database }) {
         dbQueryPromise(database, searchQuery)
             .then(result => {
                 if (result.success) {
-                    return writeTicket(JSON.stringify(result.results[0]))
-                        .then((ticket) => {
-                            return res.status(200).json({ success: true, ticket });
-                        })
-                        .catch((err) => {
-                            console.log(`Reading from database (${__filename})\n`, err);
-                            res.status(500).json({ success: false, message: 'Something went wrong.' });//render error
-                        });
-                    ;
+                    const newKey = new Session(result.results[0].id, 'admins');
+                    global.sessionList.push(newKey);
+                    return res.json({ success: true, key: newKey.key });
                 };
                 res.status(401).json({ success: result.success, message: 'Wrong Username or Password.' });
             })

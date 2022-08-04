@@ -1,3 +1,24 @@
+const token = localStorage.getItem('token')
+
+
+fetch('/login/userInfo', {
+    headers: {
+        Autorization: token,
+    }
+}).then(res => res.json()).then(result => {
+    if (!result.success) throw new Error("Authentication faild.")
+    for (const key in result.results) {
+        if (Object.hasOwnProperty.call(result.results, key)) {
+            const value = result.results[key];
+            localStorage.setItem(key, value);
+        };
+    };
+}).catch(err => {
+    console.log(err);
+    alert("Something went wrong in authentication. please login again.", 'danger');
+    setTimeout(() => window.location.href = '/login', 3400)
+});
+
 
 $(document).ready(function () {
     console.log('Document Reading...');

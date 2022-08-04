@@ -1,6 +1,3 @@
-username = $('#info').attr('username');
-password = $('#info').attr('password');
-
 $('.Modal').click(function (e) {
     if (!!e.target.id.match('Modal')) {
         $(this).removeClass('top-0');

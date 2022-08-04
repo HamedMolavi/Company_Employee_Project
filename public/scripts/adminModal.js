@@ -34,8 +34,6 @@ function openEmployeeModal(employeeID) {
     fetch('/admin/employee?id=' + employeeID)
         .then(response => response.json())
         .then(data => {
-            console.log(data);
-            console.log(data.results[0].birthday.slice(0, 10));
             $('#employeeCompanynameEdit').val(data.results[0].companyname);
             $('#employeeFirstnameEdit').val(data.results[0].firstname);
             $('#employeeLastnameEdit').val(data.results[0].lastname);
@@ -65,10 +63,10 @@ function clearModal(id) {
         $('#provincdEdit').val('');
         $('#telEdit').val('');
         $('#avatarEdit').attr('src', '/Images/icons/companies/logo.png');
-            $('#submitCompanyBtn').attr('onclick', ``);
+        $('#submitCompanyBtn').attr('onclick', ``);
         return;
     };
-    
+
     if (!!id.match('employee')) {
         $('#employeeCompanynameEdit').val('');
         $('#employeeFirstnameEdit').val('');
@@ -77,7 +75,7 @@ function clearModal(id) {
         $('#employeeNationalIDEdit').val('');
         $('#employeeAboutEdit').val('');
         $('#employeeAvatarFile').attr('src', '/Images/icons/companies/logo.png');
-            $('#submitEmployeeBtn').attr('onclick', '');
+        $('#submitEmployeeBtn').attr('onclick', '');
         return;
     };
     if (!!id.match('confirm')) {
@@ -90,8 +88,8 @@ async function editThis(id, mode) {
     let data;
     if (mode === 'company') {
         data = {
-            username,
-            password,
+            username: localStorage.username,
+            password: localStorage.password,
             id,
             companyname: $('#companynameEdit').val(),
             registeredNumber: $('#registeredNumberEdit').val(),
@@ -108,9 +106,9 @@ async function editThis(id, mode) {
             return alert('The company you entered does not exist !', 'danger');
         }
         data = {
-            username,
-            password,
-            id,
+            username: localStorage.username,
+            password: localStorage.password,
+            id: localStorage.id,
             companyname: result.results[0].id,
             firstname: $('#employeeFirstnameEdit').val(),
             lastname: $('#employeeLastnameEdit').val(),
@@ -151,8 +149,8 @@ function deleteThis(id, mode) {
             return new Promise((resolve, reject) => {
                 let data = {
                     id,
-                    username,
-                    password
+                    username: localStorage.username,
+                    password: localStorage.password
                 };
                 fetch(`/${mode}/delete`, {
                     method: 'POST',

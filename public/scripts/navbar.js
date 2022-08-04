@@ -2,7 +2,7 @@
 let animeInterval = setInterval(() => { $('#day-night').toggleClass('anime-day') }, 1500);
 $('.nav-item').eq(0).addClass('active');
 
-day = parseInt($('#info').attr('day'));
+day = localStorage.day;
 if (!day) {
     clearInterval(animeInterval);
     adjustDayNight();

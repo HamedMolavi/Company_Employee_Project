@@ -7,7 +7,7 @@
         <link type="image/png" sizes="96x96" rel="icon" href="/Images/icons/fav/Web/dashboard-96.png">
         <link rel="stylesheet" type="text/css" href="/styles/admin.css">
         <title>
-            <%= username %> | Dashboard
+             Dashboard
         </title>
 </head>
 
@@ -22,8 +22,6 @@
                 <script src="/scripts/adminModal.js"></script>
                     <div id="tableWrapper" class="container-lg bootstrap snippets bootdey mt-4"></div>
 
-                    <div id="info" aria-disabled="true" style="visibility: hidden; display: none;"
-                        username="<%= username %>" _id="<%= id %>" password="<%= password %>" day='<%= day %>'></div>
                     <%- include('./common/footer.ejs'); %>
                         <script src="/scripts/admin.js"></script>
                         <script src="/scripts/setTable.js"></script>
