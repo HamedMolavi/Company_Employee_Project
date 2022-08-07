@@ -1,18 +1,21 @@
-const { v4: uuidv4 } = require('uuid');
+const Redis  = require('ioredis');
+const { v4: uuidv4 } = require('uuid')
 const { dbQueryPromise } = require('../database/queryPromises');
+const redis = new Redis();
 
-function Session(id, model) {
-    this.userId = id;
-    this.key = uuidv4();
-    this.model = model;
-};
+
 function tokenChecker(database) {
     return async function (req, res, next) {
-        const token = req.header('autorization');//undefined
+        const token = req.header('autorization');
+        console.log('asasas', token);
         if (!token) return res.status(401).json({ success: false });
-        targetSession = global.sessionList.find(el => el.key === token);
+
+        const targetSession = await redis.get(token);
+        console.log('ssssss', targetSession);
+
+
         if (!targetSession) return res.status(401).json({ success: false });
-        searchQuery = ['SELECT * FROM `' + targetSession.model + '` where `id` =?', [targetSession.userId]]
+        searchQuery = ['SELECT * FROM `admins` where `id` =?', [targetSession]]//' + targetSession.model + '
         await dbQueryPromise(database, searchQuery).then((result) => {
             if (result.success) {
                 res.locals.user = result.results[0];
@@ -25,10 +28,16 @@ function tokenChecker(database) {
         });
     }
 }
-global.sessionList = [];
+
+async function tokenGenerator(id){
+    const token = uuidv4();
+    await redis.set(token, id);
+    await redis.expire(token, 30 * 60);
+    return token;
+}
 
 module.exports = {
-    Session,
     tokenChecker,
+    tokenGenerator,
 
 }

@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { dbQueryPromise } = require('../database/queryPromises');
-const { readTicket, writeTicket } = require('../tools/tickets');
-const { Session, tokenChecker } = require('../utils/session');
+const { tokenChecker, tokenGenerator } = require('../utils/session');
 
 
 
@@ -17,15 +16,16 @@ module.exports = function ({ database }) {
         console.log(res.locals.user);
         res.json({success: true, results: res.locals.user});
     });
+
+
     router.post('/', (req, res) => {
         let searchQuery = ['SELECT * FROM `admins` where `username`=? and `password` =?',
             [req.body.username, req.body.password]];
         dbQueryPromise(database, searchQuery)
-            .then(result => {
+            .then(async result => {
                 if (result.success) {
-                    const newKey = new Session(result.results[0].id, 'admins');
-                    global.sessionList.push(newKey);
-                    return res.json({ success: true, key: newKey.key });
+                    token = await tokenGenerator(result.results[0].id);
+                    return res.json({ success: true, key: token });
                 };
                 res.status(401).json({ success: result.success, message: 'Wrong Username or Password.' });
             })

@@ -1,31 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { dbQueryPromise } = require('../database/queryPromises');
-const { readTicket, writeTicket } = require('../tools/tickets');
 
 
 module.exports = function ({ database }) {
     //-------------
     // Change Day
     //-------------
-    router.get('/changeDay', (req, res) => {
-        let searchQuery = ["UPDATE admins SET `day` = ? WHERE (`username` = ?)", [req.query.day, req.query.username]];
-        dbQueryPromise(database, searchQuery)
-            .then(() => {
-                return readTicket(req.query.ticket)
-            })
-            .then(data => {
-                data.day = req.query.day;
-                return writeTicket(JSON.stringify(data), req.query.ticket);
-            })
-            .then(() => res.end())
-            .catch(err => {
-                console.log(`Reading from database (${__filename})\n`, err);
-                res.end();
-            });
-        ;
-    });
-
 
     //-------------
     // Get Companies
