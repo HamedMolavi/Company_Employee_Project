@@ -13,7 +13,6 @@ module.exports = function ({ database }) {
             .then(result => {
                 if (result.success) {
                     let data = result.results[0];
-                    console.log(data);
                     return res.render('employee', data);
                 };
                 return res.status(404).json({ success: result.success, message: 'Employee not found.' });
@@ -40,7 +39,6 @@ module.exports = function ({ database }) {
         let searchQuery
             = 'INSERT INTO `employees` (`id_companies`, `firstname`, `lastname`, `birthday`, `nationalID`, `gender`, `role`, `avatar`) VALUES ('
             + `'${req.body.id_company}', '${req.body.firstname}', '${req.body.lastname}','${req.body.birthday}','${req.body.nationalID}', '${req.body.gender || 'male'}', '${req.body.role || employee}', '${req.body.avatar || icon}')`;
-        console.log(searchQuery);
         dbQueryPromise(database, searchQuery)
             .then(result => {
                 result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Creating Employee Faild.' });

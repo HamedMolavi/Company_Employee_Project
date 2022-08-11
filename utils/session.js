@@ -7,13 +7,8 @@ const redis = new Redis();
 function tokenChecker(database) {
     return async function (req, res, next) {
         const token = req.header('autorization');
-        console.log('asasas', token);
         if (!token) return res.status(401).json({ success: false });
-
         const targetSession = await redis.get(token);
-        console.log('ssssss', targetSession);
-
-
         if (!targetSession) return res.status(401).json({ success: false });
         searchQuery = ['SELECT * FROM `admins` where `id` =?', [targetSession]]//' + targetSession.model + '
         await dbQueryPromise(database, searchQuery).then((result) => {

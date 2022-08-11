@@ -9,11 +9,10 @@ module.exports = function ({ database }) {
     router.get('/', (_req, res) => {
         res.render('login');
     });
-    router.get('/dashboard', (req, res) => {
+    router.get('/dashboard', (_req, res) => {
         res.render('admin');
     });
-    router.get('/userInfo', tokenChecker(database), (req, res) => {
-        console.log(res.locals.user);
+    router.get('/userInfo', tokenChecker(database), (_req, res) => {
         res.json({success: true, results: res.locals.user});
     });
 
