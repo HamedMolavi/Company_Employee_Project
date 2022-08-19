@@ -6,7 +6,6 @@ const logger = require('morgan');
 const path = require('path');
 const debug = require('debug')('CompanyEmployee:app')
 debug.enabled = true;
-//------------------------------------------------------        Require
 const express = require('express');
 const makeConnection = require('./database/connection');
 //------------------------------------------------------        Routes
@@ -14,6 +13,7 @@ const loginRouter = require('./routes/login');
 const adminRouter = require('./routes/admin');
 const companyRouter = require('./routes/company');
 const employeeRouter = require('./routes/employee');
+const cookiesRouter = require('./routes/cookies');
 //------------------------------------------------------        Express Instance
 const app = express();
 //------------------------------------------------------        Files
@@ -49,6 +49,7 @@ makeConnection()
         app.use('/company', companyRouter({ database }));
         app.use('/employee', employeeRouter({ database }));
         app.use('/admin', adminRouter({ database }));
+        app.use('/cookies', cookiesRouter({ database }));
 
 
         // catch 404 and forward to error handler

@@ -2,12 +2,25 @@
 let animeInterval = setInterval(() => { $('#day-night').toggleClass('anime-day') }, 1500);
 $('.nav-item').eq(0).addClass('active');
 
-day = localStorage.day;
-if (!day) {
-    clearInterval(animeInterval);
-    adjustDayNight();
-    $('#switchDayNightBtn').prop('checked', true);
-};
+day = 1;
+fetch('/cookies?cookie=day').
+    then(result => result.json()).
+    then(result => {
+        day = parseInt(result);
+        if (!day) {
+            clearInterval(animeInterval);
+            adjustDayNight();
+            $('#switchDayNightBtn').prop('checked', true);
+        };
+    }).
+    catch(err => {
+        console.log(err);
+        alert2("Something went Wrong :(", 'danger')
+    });
+;
+
+
+
 
 
 
@@ -71,6 +84,13 @@ $("#inpt_search").on('keydown', function (e) {
 $('#switchDayNightBtn').change(() => {
     clearInterval(animeInterval);
     day = day ? 0 : 1;
+    fetch('/cookies', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({day}),
+    })
     adjustDayNight();
 });
 
@@ -101,7 +121,8 @@ function adjustDayNight() {
         $('.bg-white').addClass('bg-black').removeClass('bg-white');
         $('.placeholder-black').addClass('placeholder-white').removeClass('placeholder-black');
         $('.bg-before-white').addClass('bg-before-black').removeClass('bg-before-white');
-        return $('.text-dark').addClass('text-light').removeClass('text-dark');
+        $('.text-dark').addClass('text-light').removeClass('text-dark');
+        return;
     };
     $('#day-night').removeClass('anime-night');
     animeInterval = setInterval(() => { $('#day-night').toggleClass('anime-day') }, 2000);
@@ -111,4 +132,4 @@ function adjustDayNight() {
     $('.bg-glass-dark').addClass('bg-glass-light').removeClass('bg-glass-dark');
     $('.placeholder-white').addClass('placeholder-black').removeClass('placeholder-white');
     return $('.text-light').addClass('text-dark').removeClass('text-light');
-}
+};

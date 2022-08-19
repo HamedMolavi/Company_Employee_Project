@@ -101,7 +101,6 @@ async function editThis(id, mode) {
     } else if (mode === 'employee') {
         let response = await fetch('/admin/company?searchBy=' + $('#employeeCompanynameEdit').val());
         let result = await response.json();
-        console.log(result);
         if (!result.success) {
             return alert('The company you entered does not exist !', 'danger');
         }
