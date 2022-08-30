@@ -107,7 +107,7 @@ async function editThis(id, mode) {
         data = {
             username: localStorage.username,
             password: localStorage.password,
-            id: localStorage.id,
+            id,
             companyname: result.results[0].id,
             firstname: $('#employeeFirstnameEdit').val(),
             lastname: $('#employeeLastnameEdit').val(),

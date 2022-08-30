@@ -8,9 +8,10 @@ module.exports = function ({ database }) {
         for (const key in req.body) {
             if (Object.hasOwnProperty.call(req.body, key)) {
                 const element = req.body[key];
-                res.cookie(key, element).end();
+                res.cookie(key, element);
             };
         };
+        res.end()
     });
     router.get('/', (req, res) => {
         if (!!req.query.cookie) {
