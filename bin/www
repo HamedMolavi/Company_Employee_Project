@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 require('dotenv').config();
-
 /**
  * Module dependencies.
  */
 
 const app = require('../app');
-const debug = require('debug')('CompanyEmployee:server');
-debug.enabled = true;
 const http = require('http');
+const dlog = require('../utils/log').dlog('server');
+const errlog = require('../utils/log').errlog('server');
 
 /**
  * Get port from environment and store in Express.
@@ -38,15 +37,9 @@ server.on('listening', onListening);
 function normalizePort(val) {
   const port = parseInt(val.trim(), 10);
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
+  if (isNaN(port)) return val; // named pipe
 
-  if (port >= 0) {
-    // port number
-    return port;
-  }
+  if (port >= 0) return port; // port number
 
   return false;
 }
@@ -56,9 +49,7 @@ function normalizePort(val) {
  */
 
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+  if (error.syscall !== 'listen') throw error; // handeling only listen errors
 
   const bind = typeof port === 'string'
     ? 'Pipe ' + port
@@ -67,14 +58,13 @@ function onError(error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
+      errlog.extend('server')(bind + ' requires elevated privileges');
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
+      errlog.extend('server')(bind + ' is already in use');
     default:
       throw error;
   }
+  process.exit(1);
 }
 
 /**
@@ -86,5 +76,7 @@ function onListening() {
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  
+  // console.log(dlog())
+  dlog('Listening on ' + bind)
 }

@@ -3,9 +3,9 @@ const createError = require('http-errors');
 const rfs = require('rotating-file-stream')
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const dlog = require('./utils/log').dlog(__filename);
+const errlog = require('./utils/log').errlog(__filename);
 const path = require('path');
-const debug = require('debug')('CompanyEmployee:app')
-debug.enabled = true;
 const express = require('express');
 const makeConnection = require('./database/connection');
 //------------------------------------------------------        Routes
@@ -34,17 +34,16 @@ app.use(cookieParser());
 
 
 //------------------------------------------------------        Setup logger
-app.use(logger('combined', { stream: accessLogStream }))
-// log only 4xx and 5xx responses to console
-app.use(logger('tiny', {
+app.use(logger('combined', {
+    stream: accessLogStream,
+    // log only 4xx and 5xx responses
     skip: function (_req, res) { return res.statusCode < 400 }
 }))
-
 
 //------------------------------------------------------        Assign Routes
 makeConnection()
     .then(function (database) {
-        debug("Database Connected.")
+        dlog("Database Connected.")
         app.use('/login', loginRouter({ database }));
         app.use('/company', companyRouter({ database }));
         app.use('/employee', employeeRouter({ database }));
@@ -58,20 +57,21 @@ makeConnection()
         });
 
         // error handler
-        app.use(function (err, req, res, _next) {
-            // set locals, only providing error in development
-            res.locals.message = err.message;
-            res.locals.error = req.app.get('env') === 'development' ? err : {};
+        app.use(errorHandler);
 
-            // render the error page
-            res.status(err.status || 500);
-            res.render('error');
-        });
     }).catch((err) => {
-        console.log('Error in making routes (app.js) ->', err);
+        errlog('Error in making routes (app.js) ->', err);
     });
 ;
 
+errorHandler = function (err, req, res, _next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
+}
 
 module.exports = app;

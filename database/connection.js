@@ -1,5 +1,6 @@
 const mysql = require('mysql2');
 const existsAdmin = require('./existsAdmin');
+const errlog = require('../utils/log').errlog(__filename);
 
 async function makeConnection() {
     try {
@@ -12,10 +13,9 @@ async function makeConnection() {
         existsAdmin(database);
         return database;
     } catch (error) {
-        console.log('\n\n=================\nDatabase connection failed.\n=================');
-        console.log(error);
+        errlog('\n\n=================\nDatabase connection failed.\n=================');
+        errlog(error);
         process.exit(1);
-
     };
 };
 
