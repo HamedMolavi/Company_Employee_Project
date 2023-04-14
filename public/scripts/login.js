@@ -1,13 +1,12 @@
 $('form').submit(function (e) {
-    const form = e.target;
     e.preventDefault();
+    const form = e.target;
     sendForm(form)
         .then(result => {
             alert2(result.message || 'logged in successfully', !!result.message ? 'danger' : 'success');
-            !!result.key
+            !!result.redirected
                 ? setTimeout(() => {
-                    localStorage.setItem('token', result.key)
-                    window.location.href = `login/dashboard`;
+                    window.location.href = result.url;
                 }, 1525) : null;
         })
         .catch(err => {

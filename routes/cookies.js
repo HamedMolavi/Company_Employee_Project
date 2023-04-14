@@ -15,10 +15,8 @@ module.exports = function ({ database }) {
     });
     router.get('/', (req, res) => {
         if (!!req.query.cookie) {
-            if (!!req.cookies[req.query.cookie]) {
-                return res.json(req.cookies[req.query.cookie])
-            };
-            return res.json()
+            result = !!req.cookies[req.query.cookie] ? req.cookies[req.query.cookie] : null
+            return res.json(result)
         };
         return res.json(req.cookies)
     });

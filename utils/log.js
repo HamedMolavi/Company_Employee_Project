@@ -1,4 +1,4 @@
-process.env.DEBUG = 'CompanyEmployee:*'
+process.env.DEBUG = 'CompanyEmployee:*,express-session:*'
 const debug = require('debug');
 
 const log = debug('CompanyEmployee');

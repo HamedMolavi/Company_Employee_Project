@@ -2,18 +2,22 @@ const express = require('express');
 const router = express.Router();
 const { dbQueryPromise } = require('../database/queryPromises');
 const { tokenChecker, tokenGenerator } = require('../utils/session');
+const dlog = require('../utils/log').dlog(__filename);
+const errlog = require('../utils/log').errlog(__filename);
 
 
 
 module.exports = function ({ database }) {
     router.get('/', (_req, res) => {
-        res.render('login');
+        return res.render('login');
     });
     router.get('/dashboard', (_req, res) => {
-        res.render('admin');
+        return res.render('admin');
     });
-    router.get('/userInfo', tokenChecker(database), (_req, res) => {
-        res.json({success: true, results: res.locals.user});
+    router.get('/userInfo', (req, res) => {
+        results = req.session.user;
+        delete results['id'];
+        return res.json({success: true, results});
     });
 
 
@@ -23,14 +27,14 @@ module.exports = function ({ database }) {
         dbQueryPromise(database, searchQuery)
             .then(async result => {
                 if (result.success) {
-                    token = await tokenGenerator(result.results[0].id);
-                    return res.json({ success: true, key: token });
+                    req.session.user = result.results[0]
+                    return res.redirect('/dashboard')
                 };
-                res.status(401).json({ success: result.success, message: 'Wrong Username or Password.' });
+                res.status(401).json({ success: false, message: 'Wrong Username or Password.' });
             })
             .catch(err => {
-                console.log(`Reading from database (${__filename})\n`, err);
-                res.status(500).json({ success: false, message: 'Something went wrong.' });//render error
+                errlog(`Reading from database ->\n`, err);
+                res.status(500).json({ success: false, message: 'Something went wrong.' });
             });
         ;
     });

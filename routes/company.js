@@ -3,6 +3,7 @@ const router = express.Router();
 const { dbQueryPromise } = require('../database/queryPromises');
 const { validator } = require('../validation/index');
 const { creatCompanySchema, editCompanySchema, deleteCompanySchema } = require('../validation/company');
+const errlog = require('../utils/log').errlog(__filename);
 
 
 module.exports = function ({ database }) {
@@ -11,18 +12,19 @@ module.exports = function ({ database }) {
     // Creat Company
     //-------------
     router.post('/', validator(creatCompanySchema), (req, res) => {
+        let now = new Date();
         let searchQuery
             = 'INSERT INTO `companies` (`companyname`, `registeredNumber`, `city`, `province`, `tel`, `avatar`, `createdAt`) VALUES ('
-            + `'${req.body.companyname}', '${req.body.registeredNumber}', '${req.body.city}','${req.body.province}','${req.body.tel}', ${req.body.avatar || '/Images/icons/companies/logo.png'}, '${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}')`;
+            + `'${req.body.companyname}', '${req.body.registeredNumber}', '${req.body.city}','${req.body.province}','${req.body.tel}', ${req.body.avatar || '/Images/icons/companies/logo.png'}, '${now.getFullYear()}-${now.getMonth()}-${now.getDate()}')`;
         dbQueryPromise(database, searchQuery)
             .then(result => {
                 result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Creating Company Faild.' });
             })
             .catch(err => {
-                console.log(`Reading from database (${__filename})\n`, err);
+                errlog(`Creating company failed ->\n`, err);
                 err.errno === 1062
                     ? res.status(200).json({ success: false, message: 'This company name exists.' })
-                    : res.status(500).json({ success: false, message: 'Something went wrong.' });//render error
+                    : res.status(500).json({ success: false, message: 'Something went wrong.' });
             });
         ;
     });
@@ -47,8 +49,8 @@ module.exports = function ({ database }) {
                 result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Editting Company Faild.' });
             })
             .catch(err => {
-                console.log(`Reading from database (${__filename})\n`, err);
-                res.status(500).json({ success: false, message: 'Something went wrong.' });//render error
+                errlog(`Editing company failed ->\n`, err);
+                res.status(500).json({ success: false, message: 'Something went wrong.' });
             });
         ;
     });
@@ -65,7 +67,7 @@ module.exports = function ({ database }) {
                 result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Deleting Company Faild.' });
             })
             .catch(err => {
-                console.log(`Reading from database (${__filename})\n`, err);
+                errlog(`Deleting company failed ->\n`, err);
                 res.status(500).json({ success: false, message: 'Something went wrong.' });//render error
             });
         ;

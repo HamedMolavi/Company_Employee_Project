@@ -3,6 +3,7 @@ const router = express.Router();
 const { dbQueryPromise } = require('../database/queryPromises');
 const { validator } = require('../validation/index');
 const { creatEmployeeSchema, editEmployeeSchema, deleteEmployeeSchema } = require('../validation/employee');
+const errlog = require('../utils/log').errlog(__filename);
 
 
 module.exports = function ({ database }) {
@@ -15,13 +16,11 @@ module.exports = function ({ database }) {
                     let data = result.results[0];
                     return res.render('employee', data);
                 };
-                return res.status(404).json({ success: result.success, message: 'Employee not found.' });
+                return res.status(404).json({ success: false, message: 'Employee not found.' });
             })
             .catch(err => {
-                console.log(`Reading from database (${__filename})\n`, err);
-                err.errno === 1062
-                    ? res.status(200).json({ success: false, message: 'This employee name exists.' })
-                    : res.status(500).json({ success: false, message: 'Something went wrong.' });//render error
+                errlog(`Getting employee failed ->\n`, err);
+                return res.status(500).json({ success: false, message: 'Something went wrong.' });
             });
         ;
 
@@ -38,16 +37,16 @@ module.exports = function ({ database }) {
             : icon = '/Images/icons/employees/man-icon.png';
         let searchQuery
             = 'INSERT INTO `employees` (`id_companies`, `firstname`, `lastname`, `birthday`, `nationalID`, `gender`, `role`, `avatar`) VALUES ('
-            + `'${req.body.id_company}', '${req.body.firstname}', '${req.body.lastname}','${req.body.birthday}','${req.body.nationalID}', '${req.body.gender || 'male'}', '${req.body.role || employee}', '${req.body.avatar || icon}')`;
+            + `'${req.body.id_company}', '${req.body.firstname}', '${req.body.lastname}','${req.body.birthday}','${req.body.nationalID}', '${req.body.gender || 'male'}', '${req.body.role || 'employee'}', '${req.body.avatar || icon}')`;
         dbQueryPromise(database, searchQuery)
             .then(result => {
                 result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Creating Employee Faild.' });
             })
             .catch(err => {
-                console.log(`Reading from database (${__filename})\n`, err);
+                errlog(`Creating employee failed. ->\n`, err);
                 err.errno === 1062
                     ? res.status(200).json({ success: false, message: 'This employee name exists.' })
-                    : res.status(500).json({ success: false, message: 'Something went wrong.' });//render error
+                    : res.status(500).json({ success: false, message: 'Something went wrong.' });
             });
         ;
     });
@@ -68,8 +67,8 @@ module.exports = function ({ database }) {
                 result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Deleting Employee Faild.' });
             })
             .catch(err => {
-                console.log(`Reading from database (${__filename})\n`, err);
-                res.status(500).json({ success: false, message: 'Something went wrong.' });//render error
+                errlog(`Deleting employee failed. ->\n`, err);
+                res.status(500).json({ success: false, message: 'Something went wrong.' });
             });
         ;
     });
@@ -77,7 +76,7 @@ module.exports = function ({ database }) {
 
 
     //-------------
-    // Edit Company
+    // Edit Employee
     //-------------
     router.post('/edit', validator(editEmployeeSchema, database), (req, res) => {
         let searchQuery//UPDATE `employees` SET `id_companies` = '1', `firstname` = '1', `lastname` = '1', `birthday` = '1', `nationalID` = '1', `gender` = '1', `role` = '1', `avatar` = '1', `about` = '1' WHERE (`id` = '17') and (`id_companies` = '7');

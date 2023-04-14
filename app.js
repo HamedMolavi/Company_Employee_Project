@@ -2,6 +2,7 @@
 const createError = require('http-errors');
 const rfs = require('rotating-file-stream')
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const logger = require('morgan');
 const dlog = require('./utils/log').dlog(__filename);
 const errlog = require('./utils/log').errlog(__filename);
@@ -14,6 +15,7 @@ const adminRouter = require('./routes/admin');
 const companyRouter = require('./routes/company');
 const employeeRouter = require('./routes/employee');
 const cookiesRouter = require('./routes/cookies');
+const dashboardRouter = require('./routes/dashboard');
 //------------------------------------------------------        Express Instance
 const app = express();
 //------------------------------------------------------        Files
@@ -31,6 +33,14 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({
+    secret: process.env.SECRET,
+    resave: true,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: null
+    }
+}));
 
 
 //------------------------------------------------------        Setup logger
@@ -39,7 +49,7 @@ app.use(logger('combined', {
     // log only 4xx and 5xx responses
     skip: function (_req, res) { return res.statusCode < 400 }
 }))
-
+if (process.env.MODE === 'development') app.use(logger('dev'))
 //------------------------------------------------------        Assign Routes
 makeConnection()
     .then(function (database) {
@@ -49,7 +59,8 @@ makeConnection()
         app.use('/employee', employeeRouter({ database }));
         app.use('/admin', adminRouter({ database }));
         app.use('/cookies', cookiesRouter({ database }));
-
+        app.use('/dashboard', dashboardRouter({ database }));
+        
 
         // catch 404 and forward to error handler
         app.use(function (_req, _res, next) {

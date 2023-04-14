@@ -41,6 +41,7 @@ function sendForm(form, addOptions) {
 
         fetch(url || form.action, options)
             .then(response => {
+                if (!! response.redirected) resolve(response);
                 return response.json();
             })
             .then(data => {
