@@ -16,11 +16,11 @@ module.exports = function ({ database }) {
                     let data = result.results[0];
                     return res.render('employee', data);
                 };
-                return res.status(404).json({ success: false, message: 'Employee not found.' });
+                return res.status(404).end();
             })
             .catch(err => {
                 errlog(`Getting employee failed ->\n`, err);
-                return res.status(500).json({ success: false, message: 'Something went wrong.' });
+                return res.status(500).end();
             });
         ;
 
@@ -40,13 +40,13 @@ module.exports = function ({ database }) {
             + `'${req.body.id_company}', '${req.body.firstname}', '${req.body.lastname}','${req.body.birthday}','${req.body.nationalID}', '${req.body.gender || 'male'}', '${req.body.role || 'employee'}', '${req.body.avatar || icon}')`;
         dbQueryPromise(database, searchQuery)
             .then(result => {
-                result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Creating Employee Faild.' });
+                result.success ? res.status(200).json(result) : res.status(404).end();
             })
             .catch(err => {
                 errlog(`Creating employee failed. ->\n`, err);
                 err.errno === 1062
-                    ? res.status(200).json({ success: false, message: 'This employee name exists.' })
-                    : res.status(500).json({ success: false, message: 'Something went wrong.' });
+                    ? res.status(406).end()
+                    : res.status(500).end();
             });
         ;
     });
@@ -64,11 +64,11 @@ module.exports = function ({ database }) {
 
         dbQueryPromise(database, searchQuery)
             .then(result => {
-                result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Deleting Employee Faild.' });
+                result.success ? res.status(200).json(result) : res.status(404).end();
             })
             .catch(err => {
                 errlog(`Deleting employee failed. ->\n`, err);
-                res.status(500).json({ success: false, message: 'Something went wrong.' });
+                res.status(500).end();
             });
         ;
     });
@@ -79,7 +79,7 @@ module.exports = function ({ database }) {
     // Edit Employee
     //-------------
     router.post('/edit', validator(editEmployeeSchema, database), (req, res) => {
-        let searchQuery//UPDATE `employees` SET `id_companies` = '1', `firstname` = '1', `lastname` = '1', `birthday` = '1', `nationalID` = '1', `gender` = '1', `role` = '1', `avatar` = '1', `about` = '1' WHERE (`id` = '17') and (`id_companies` = '7');
+        let searchQuery
 
         !!req.body.companyname
             ? searchQuery
@@ -91,11 +91,11 @@ module.exports = function ({ database }) {
 
         dbQueryPromise(database, searchQuery)
             .then(result => {
-                result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Editting Employee Faild.' });
+                result.success ? res.status(200).json(result) : res.status(404).end();
             })
             .catch(err => {
                 console.log(`Reading from database (${__filename})\n`, err);
-                res.status(500).json({ success: false, message: 'Something went wrong.' });//render error
+                res.status(500).end();
             });
         ;
     });

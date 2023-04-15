@@ -41,7 +41,7 @@ function sendForm(form, addOptions) {
 
         fetch(url || form.action, options)
             .then(response => {
-                if (!! response.redirected) resolve(response);
+                if (!!response.redirected) resolve(response);
                 return response.json();
             })
             .then(data => {
@@ -98,4 +98,35 @@ function confirm([title, prompt, alertMessage, alertClass], cbPromise) {
         });
     });
     $('#confirmModal').addClass('top-0');
+};
+
+async function asyncreturnHttpResponse(response) {
+    switch (response.status) {
+        case 200:
+            res = await response.json();
+            return { success: true, ...res }
+        case 301 || 302 || 303:
+            return window.location.href = response.url;
+        case 400 || 401 || 404 || 406: // Bad request || Not Authorized || Not Found || Not Acceptable
+            return { success: false, code: response.status };
+        case 403: // Forbidden
+            return; // not implemented
+        case 421: // Misdirected Request
+            return; // not implemented
+        case 429: // Too Many Requests
+            return; // not implemented
+        case 500 || 501: // Internal Server Error
+            return window.location.href = '/error';
+        case 502: // Bad Gateway
+            return; // not implemented
+        default: // ERROR?
+            return;// not implemented
+    };
+};
+
+
+function getCookie(name) {
+    const arr = document.cookie.split('=');
+    const pos = arr.indexOf(name) + 1;
+    return !!pos ? arr[pos] : null
 };

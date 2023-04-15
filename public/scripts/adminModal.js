@@ -11,7 +11,7 @@ $(document).on('keydown', function (e) {
 
 function openCompanyModal(companyID) {
     fetch('/admin/company?id=' + companyID)
-        .then(response => response.json())
+        .then(asyncreturnHttpResponse)
         .then(data => {
             $('#companynameEdit').val(data.results[0].companyname);
             $('#registeredNumberEdit').val(data.results[0].registeredNumber);
@@ -23,7 +23,6 @@ function openCompanyModal(companyID) {
             $('#companyModal').addClass('top-0');
         })
         .catch(err => {
-            console.log(err);
             alert2("Something went Wrong :(", 'danger')
         });
     ;
@@ -32,7 +31,7 @@ function openCompanyModal(companyID) {
 
 function openEmployeeModal(employeeID) {
     fetch('/admin/employee?id=' + employeeID)
-        .then(response => response.json())
+        .then(asyncreturnHttpResponse)
         .then(data => {
             $('#employeeCompanynameEdit').val(data.results[0].companyname);
             $('#employeeFirstnameEdit').val(data.results[0].firstname);
@@ -47,7 +46,6 @@ function openEmployeeModal(employeeID) {
             $('#employeeModal').addClass('top-0');
         })
         .catch(err => {
-            console.log(err);
             alert2("Something went Wrong :(", 'danger')
         });
     ;
@@ -88,8 +86,6 @@ async function editThis(id, mode) {
     let data;
     if (mode === 'company') {
         data = {
-            username: localStorage.username,
-            password: localStorage.password,
             id,
             companyname: $('#companynameEdit').val(),
             registeredNumber: $('#registeredNumberEdit').val(),
@@ -105,8 +101,6 @@ async function editThis(id, mode) {
             return alert('The company you entered does not exist !', 'danger');
         }
         data = {
-            username: localStorage.username,
-            password: localStorage.password,
             id,
             companyname: result.results[0].id,
             firstname: $('#employeeFirstnameEdit').val(),
@@ -126,7 +120,7 @@ async function editThis(id, mode) {
         },
         body: JSON.stringify(data),
     })
-        .then((response) => response.json())
+        .then(asyncreturnHttpResponse)
         .then((data) => {
             if (!!data.success) {
                 alert2(`${mode} editted successfully :)`, 'success');
@@ -137,7 +131,7 @@ async function editThis(id, mode) {
             alert(data.message, 'danger');
         })
         .catch((error) => {
-            console.error('Error:', error);
+            alert2("Something went Wrong :(", 'danger')
         });
 };
 
@@ -158,7 +152,7 @@ function deleteThis(id, mode) {
                     },
                     body: JSON.stringify(data),
                 })
-                    .then((response) => response.json())
+                    .then(asyncreturnHttpResponse)
                     .then((data) => {
                         if (!!data.success) {
                             load(mode);
@@ -167,7 +161,7 @@ function deleteThis(id, mode) {
                         return reject();
                     })
                     .catch((error) => {
-                        console.error('Error:', error);
+                        alert2("Something went Wrong :(", 'danger')
                         return reject();
                     });
             });

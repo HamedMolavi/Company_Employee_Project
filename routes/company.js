@@ -18,13 +18,13 @@ module.exports = function ({ database }) {
             + `'${req.body.companyname}', '${req.body.registeredNumber}', '${req.body.city}','${req.body.province}','${req.body.tel}', ${req.body.avatar || '/Images/icons/companies/logo.png'}, '${now.getFullYear()}-${now.getMonth()}-${now.getDate()}')`;
         dbQueryPromise(database, searchQuery)
             .then(result => {
-                result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Creating Company Faild.' });
+                result.success ? res.status(200).json(result) : res.status(404).end();
             })
             .catch(err => {
                 errlog(`Creating company failed ->\n`, err);
                 err.errno === 1062
-                    ? res.status(200).json({ success: false, message: 'This company name exists.' })
-                    : res.status(500).json({ success: false, message: 'Something went wrong.' });
+                    ? res.status(406).end()
+                    : res.status(500).end();
             });
         ;
     });
@@ -35,7 +35,6 @@ module.exports = function ({ database }) {
     //-------------
     router.post('/edit', validator(editCompanySchema, database), (req, res) => {
         let searchQuery
-
         !!req.body.registeredNumber
             ? searchQuery
             = ['UPDATE `companies` SET `companyname` = ?, `registeredNumber` = ?, `city` = ?, `province` = ?, `tel` = ?, `avatar` = ? WHERE (`id` = ?)',
@@ -46,11 +45,11 @@ module.exports = function ({ database }) {
 
         dbQueryPromise(database, searchQuery)
             .then(result => {
-                result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Editting Company Faild.' });
+                result.success ? res.status(200).json(result) : res.status(404).end();
             })
             .catch(err => {
                 errlog(`Editing company failed ->\n`, err);
-                res.status(500).json({ success: false, message: 'Something went wrong.' });
+                res.status(500).end();
             });
         ;
     });
@@ -64,11 +63,11 @@ module.exports = function ({ database }) {
 
         dbQueryPromise(database, searchQuery)
             .then(result => {
-                result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Deleting Company Faild.' });
+                result.success ? res.status(200).json(result) : res.status(404).end();
             })
             .catch(err => {
                 errlog(`Deleting company failed ->\n`, err);
-                res.status(500).json({ success: false, message: 'Something went wrong.' });//render error
+                res.status(500).end();
             });
         ;
     });

@@ -1,3 +1,8 @@
+$('#rememberMe').on('click', ()=>{
+    $('#rememberMe').val($('#rememberMe').prop('checked'));
+});
+
+
 $('form').submit(function (e) {
     e.preventDefault();
     const form = e.target;

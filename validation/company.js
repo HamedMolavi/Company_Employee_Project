@@ -32,8 +32,6 @@ const editCompanySchema = [
     },
     {
         name: "registeredNumber",
-        validation: true,
-        ref: ['admins', 'Not Authorized to change registeredNumber'],
         pattern: [/^\d{1,}$/, "Invalid Format of Registration Number."]
     },
     {
@@ -56,9 +54,7 @@ const editCompanySchema = [
 const deleteCompanySchema = [
     {
         name: "id",
-        validation: true,
         required: true,
-        ref: ['admins', 'Not Authorized to delete a company.']
     }
 ];
 

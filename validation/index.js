@@ -14,6 +14,17 @@ function validator(schema, db) {
     // returns a middleware with defaulted an schema and the database
     return async function (req, res, next) {
         const errors = []; // an array of errors through validating
+        // checking privilidge validation -> should be done with session.
+        if (!req.session) return res.status(401).json({ success: false, message: "Not Authorized." });
+        await dbQueryPromise(db, ['SELECT id FROM `admins` where username=? and password=?', [req.session.user.username, req.session.user.password]])
+            .then((result) => {
+                if (!result.success) res.status(401).json({ success: false, message: "Not Authorized." });
+            })
+            .catch((err) => {
+                errlog(err);
+                return res.status(500).json({ success: false, message: 'Something went wrong.' });
+            });
+        ;
         for (const schemaField of schema) { // each field in the schema
             const fieldValue = req.body[schemaField.name]; // value in request responsible for the schema field
             if (!fieldValue) {
@@ -43,18 +54,6 @@ function validator(schema, db) {
                     errors.push(new SchemaError(schemaField.name, schemaField.pattern[1]));
                 };
             };
-            if (!!schemaField.validation) { // checking privilidge validation -> should be done with session.
-                if (!req.body.username || !req.body.password) return res.json({ success: false, message: "Not Authorized." });
-                await dbQueryPromise(db, ['SELECT id FROM `' + schemaField.ref[0] + '` where username=? and password=?', [req.body.username, req.body.password]])
-                    .then((result) => {
-                        if (!result.success) errors.push(new SchemaError(schemaField.name, schemaField.ref[1]));
-                    })
-                    .catch((err) => {
-                        errlog(err);
-                        return res.status(500).json({ success: false, message: 'Something went wrong.' });
-                    });
-                ;
-            }
             if (schemaField.type === 'id' && !!schemaField.ref) { // Checking null references
                 await dbQueryPromise(db, 'SELECT id FROM `' + schemaField.ref[0] + '` where id=' + req.body[schemaField.name])
                     .then((result) => {

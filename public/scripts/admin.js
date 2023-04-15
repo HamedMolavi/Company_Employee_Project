@@ -1,18 +1,12 @@
-const token = localStorage.getItem('token')
-
-
 fetch('/login/userInfo')
-    .then(res => res.json()).then(result => {
-        console.log(result);
-        if (!result.success) throw new Error("Authentication faild.")
-        for (const key in result.results) {
-            if (Object.hasOwnProperty.call(result.results, key)) {
-                const value = result.results[key];
+    .then(asyncreturnHttpResponse).then(result => {
+        for (const key in result) {
+            if (Object.hasOwnProperty.call(result, key) && key !== 'success') {
+                const value = result[key];
                 localStorage.setItem(key, value);
             };
         };
     }).catch(err => {
-        console.log(err);
         alert("Something went wrong in authentication. please login again.", 'danger');
         setTimeout(() => window.location.href = '/login', 3400)
     });
@@ -34,14 +28,12 @@ function load(mode, searchBy) {
     !!searchBy
         ? searchFetch += '?' + searchBy
         : null;
-    console.log(searchFetch);
     fetch(searchFetch)
-        .then(response => response.json())
+        .then(asyncreturnHttpResponse)
         .then(data => {
             arrangeTable(mode, data.results);
         })
         .catch(err => {
-            console.log(err);
             alert2("Something went Wrong :(", 'danger')
         });
     ;

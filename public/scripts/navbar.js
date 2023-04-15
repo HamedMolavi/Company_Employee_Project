@@ -2,26 +2,18 @@
 let animeInterval = setInterval(() => { $('#day-night').toggleClass('anime-day') }, 1500);
 $('.nav-item').eq(0).addClass('active');
 
-day = 1;
-fetch('/cookies?cookie=day').
-    then(result => result.json()).
-    then(result => {
-        day = parseInt(result);
-        if (!day) {
-            clearInterval(animeInterval);
-            adjustDayNight();
-            $('#switchDayNightBtn').prop('checked', true);
-        };
-    }).
-    catch(err => {
-        console.log(err);
-        alert2("Something went Wrong :(", 'danger')
-    });
-;
-
-
-
-
+day = parseInt(getCookie('day'));
+day = isNaN(day) ? 1 : day;
+fetch('/cookies', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({day}),
+});
+clearInterval(animeInterval);
+$('#switchDayNightBtn').prop('checked', !day ? true : false);
+adjustDayNight();
 
 
 // ---------Responsive-navbar-active-animation-----------
@@ -90,7 +82,7 @@ $('#switchDayNightBtn').change(() => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({day}),
-    })
+    });
     adjustDayNight();
 });
 

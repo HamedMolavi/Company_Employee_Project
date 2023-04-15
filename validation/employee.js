@@ -65,8 +65,6 @@ const editEmployeeSchema = [
     {
         name: "companyname",
         required: true,
-        validation: true,
-        ref: ['admins', 'Not Authorized to change registeredNumber'],
     },
     {
         name: "gender",
@@ -81,9 +79,7 @@ const editEmployeeSchema = [
 const deleteEmployeeSchema = [
     {
         name: "id",
-        validation: true,
         required: true,
-        ref: ['admins', 'Not Authorized to delete an employee']
     }
 ];
 

@@ -28,11 +28,11 @@ module.exports = function ({ database }) {
                 : searchQuery = ['SELECT * FROM `companies` order by id']
         dbQueryPromise(database, searchQuery)
             .then(result => {
-                result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Company not found.' });
+                result.success ? res.status(200).json(result) : res.status(404).end();
             })
             .catch(err => {
                 errlog(`Reading from database\n`, err);
-                res.status(500).json({ success: false, message: 'Something went wrong.' });
+                res.status(500).end();
             });
         ;
     });
@@ -72,11 +72,11 @@ module.exports = function ({ database }) {
 
         dbQueryPromise(database, searchQuery)
             .then(result => {
-                result.success ? res.status(200).json(result) : res.status(404).json({ success: false, message: 'Employee not found.' });
+                result.success ? res.status(200).json(result) : res.status(404).end();
             })
             .catch(err => {
                 errlog(`Reading from database\n`, err);
-                res.status(500).json({ success: false, message: 'Something went wrong.' });
+                res.status(500).end();
             });
         ;
     });

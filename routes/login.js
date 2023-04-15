@@ -15,9 +15,10 @@ module.exports = function ({ database }) {
         return res.render('admin');
     });
     router.get('/userInfo', (req, res) => {
+        if (!req.session.user) return res.redirect('login');
         results = req.session.user;
         delete results['id'];
-        return res.json({success: true, results});
+        return res.json(results);
     });
 
 
@@ -27,14 +28,15 @@ module.exports = function ({ database }) {
         dbQueryPromise(database, searchQuery)
             .then(async result => {
                 if (result.success) {
+                    req.session.cookie.maxAge = !!req.body.rememberMe ? 31536000000 : null;
                     req.session.user = result.results[0]
                     return res.redirect('/dashboard')
                 };
-                res.status(401).json({ success: false, message: 'Wrong Username or Password.' });
+                res.status(401).end();
             })
             .catch(err => {
                 errlog(`Reading from database ->\n`, err);
-                res.status(500).json({ success: false, message: 'Something went wrong.' });
+                res.status(500).end();
             });
         ;
     });
