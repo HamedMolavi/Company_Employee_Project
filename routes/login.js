@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { dbQueryPromise } = require('../database/queryPromises');
-const { tokenChecker, tokenGenerator } = require('../utils/session');
 const dlog = require('../utils/log').dlog(__filename);
 const errlog = require('../utils/log').errlog(__filename);
 

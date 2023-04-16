@@ -6,16 +6,15 @@ $('#rememberMe').on('click', () => {
 $('form').submit(function (e) {
     e.preventDefault();
     const form = e.target;
-    sendForm(form)
+    sendForm(form, { Redirect: 'manual' })
         .then(result => {
             alert2(... !!result.success ? ['logged in successfully', 'success']
                 : result.status === 401
                     ? ['Wrong username or password!', 'danger']
                     : ['Something went wrong!', 'danger']);
-            !!result.redirected
-                ? setTimeout(() => {
-                    window.location.href = result.url;
-                }, 1525) : null;
+            setTimeout(() => {
+                window.location.href = result.url;
+            }, 1525);
         })
         .catch(err => {
             alert('something went wrong', 'danger');

@@ -15,14 +15,14 @@ function validator(schema, db) {
     return async function (req, res, next) {
         const errors = []; // an array of errors through validating
         // checking privilidge validation -> should be done with session.
-        if (!req.session) return res.status(401).json({ success: false, message: "Not Authorized." });
+        if (!req.session) return res.status(401).end();
         await dbQueryPromise(db, ['SELECT id FROM `admins` where username=? and password=?', [req.session.user.username, req.session.user.password]])
             .then((result) => {
-                if (!result.success) res.status(401).json({ success: false, message: "Not Authorized." });
+                if (!result.success) res.status(401).end();
             })
             .catch((err) => {
                 errlog(err);
-                return res.status(500).json({ success: false, message: 'Something went wrong.' });
+                return res.status(500).end();
             });
         ;
         for (const schemaField of schema) { // each field in the schema
@@ -61,7 +61,7 @@ function validator(schema, db) {
                     })
                     .catch((err) => {
                         errlog(err);
-                        return res.status(500).json({ success: false, message: 'Something went wrong.' });
+                        return res.status(500).end();
                     });
             };
         };

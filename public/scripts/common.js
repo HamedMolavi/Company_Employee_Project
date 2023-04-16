@@ -40,7 +40,7 @@ function sendForm(form, addOptions) {
         };
 
         fetch(url || form.action, options)
-            .then(asyncreturnHttpResponse)
+            .then((response) => asyncreturnHttpResponse(response, { Redirect: addOptions.Redirect || 'follow' }))
             .then(data => {
                 return resolve(data);
             })
@@ -97,15 +97,19 @@ function confirm([title, prompt, alertMessage, alertClass], cbPromise) {
     $('#confirmModal').addClass('top-0');
 };
 
-async function asyncreturnHttpResponse(response) {
+async function asyncreturnHttpResponse(response, options = { Redirect: 'follow' }) {
     switch (response.status) {
         case 200:
-            res = await response.json();
-            return { success: true, ...res }
+            if (response.redirected) response.status = 302;
+            else {
+                res = await response.json();
+                return { success: true, ...res }
+            };
         case 301:
         case 302:
         case 303:
-            return window.location.href = response.url;
+            if (options.Redirect === 'follow') return window.location.href = response.url;
+            if (options.Redirect === 'manual') return { success: true, url: response.url };
         case 400: // Bad request
         case 401: // Not Authorized
         case 404: // Not Found
