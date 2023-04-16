@@ -40,10 +40,7 @@ function sendForm(form, addOptions) {
         };
 
         fetch(url || form.action, options)
-            .then(response => {
-                if (!!response.redirected) resolve(response);
-                return response.json();
-            })
+            .then(asyncreturnHttpResponse)
             .then(data => {
                 return resolve(data);
             })
@@ -105,10 +102,15 @@ async function asyncreturnHttpResponse(response) {
         case 200:
             res = await response.json();
             return { success: true, ...res }
-        case 301 || 302 || 303:
+        case 301:
+        case 302:
+        case 303:
             return window.location.href = response.url;
-        case 400 || 401 || 404 || 406: // Bad request || Not Authorized || Not Found || Not Acceptable
-            return { success: false, code: response.status };
+        case 400: // Bad request
+        case 401: // Not Authorized
+        case 404: // Not Found
+        case 406: // Not Acceptable
+            return { success: false, status: parseInt(response.status) };
         case 403: // Forbidden
             return; // not implemented
         case 421: // Misdirected Request
