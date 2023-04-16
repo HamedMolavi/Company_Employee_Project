@@ -3,6 +3,7 @@ const createError = require('http-errors');
 const rfs = require('rotating-file-stream')
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const { redisStoreConnect } = require('./utils/session');
 const logger = require('morgan');
 const dlog = require('./utils/log').dlog(__filename);
 const errlog = require('./utils/log').errlog(__filename);
@@ -33,7 +34,9 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+store = redisStoreConnect()
 app.use(session({
+    store,
     secret: process.env.SECRET,
     resave: true,
     saveUninitialized: false,
@@ -60,7 +63,7 @@ makeConnection()
         app.use('/admin', adminRouter({ database }));
         app.use('/cookies', cookiesRouter({ database }));
         app.use('/dashboard', dashboardRouter({ database }));
-        
+
 
         // catch 404 and forward to error handler
         app.use(function (_req, _res, next) {
