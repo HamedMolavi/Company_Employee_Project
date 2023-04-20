@@ -36,11 +36,13 @@ function sendForm(form, addOptions) {
             for (const [key, value] of formData) {
                 data[key] = value;
             };
-            options.body = JSON.stringify(data)
+            options.body = JSON.stringify(data);
+            url = form.action;
         };
-
-        fetch(url || form.action, options)
-            .then((response) => asyncreturnHttpResponse(response, { Redirect: addOptions.Redirect || 'follow' }))
+        // Handle redirection
+        if (addOptions.Redirect === 'manual') url += form.method.toUpperCase() === "GET" ? `redirect=manual` : `?redirect=manual`
+        fetch(url, options)
+            .then((response) => asyncreturnHttpResponse(response, {Redirect: addOptions.Redirect || 'follow'}))
             .then(data => {
                 return resolve(data);
             })
@@ -108,8 +110,8 @@ async function asyncreturnHttpResponse(response, options = { Redirect: 'follow' 
         case 301:
         case 302:
         case 303:
-            if (options.Redirect === 'follow') return window.location.href = response.url;
-            if (options.Redirect === 'manual') return { success: true, url: response.url };
+        if (options.Redirect === 'follow') return window.location.href = response.url;
+        if (options.Redirect === 'manual') return { success: true, url: response.url };
         case 400: // Bad request
         case 401: // Not Authorized
         case 404: // Not Found

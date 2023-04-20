@@ -10,7 +10,7 @@ module.exports = function ({ database }) {
     router.get('/', (req, res) => {
         !!req.session.user
             ? res.render(req.session.user.role || 'error')
-            : res.redirect('/login')
+            : res.redirect('/login');
         return;
     });
 
