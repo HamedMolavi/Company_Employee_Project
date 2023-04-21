@@ -10,7 +10,7 @@ function redisStoreConnect() {
         let redisStore = new RedisStore({
             client: redisClient,
             prefix: "company_employee:",
-            ttl: 1,
+            ttl: 86400,
             disableTouch: true,
         });
         dlog('Session on Redis.')
