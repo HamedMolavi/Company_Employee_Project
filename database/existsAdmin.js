@@ -1,28 +1,24 @@
 const bcrypt = require('bcryptjs');
 
-module.exports = function (database) {
-    database.query(
-        'SELECT * FROM `admins`',
-        [],
-        (err, results, _fields) => {
-            if (err) throw err;
+module.exports = async function (models) {
+    models.User.findOne({ role: 'admin' })
+        .then(admin => {
+            if (!!admin) return console.log('admin -->', admin);
+            // Hashing password
+            bcrypt.hash(process.env.ADMIN_PASSWORD, 10, function (err, hashedPassword) {
+                if (err) throw err;
+                let NEW_ADMIN = new models.User({
+                    username: process.env.ADMIN_USERNAME,
+                    password: hashedPassword,
+                    role: 'admin',
+                    email: 'none@none.none',
+                    gender: 'male'
 
-            // admin didn't exist
-            if (!results.length) {
-                // Hashing password
-                bcrypt.hash(process.env.ADMIN_PASSWORD, 10, function (err, hashedPassword) {
-                    if (err) throw err;
-                    return database.query(
-                        'INSERT INTO `admins` (`username`, `password`) VALUES (?, ?)',
-                        [process.env.ADMIN_USERNAME, hashedPassword],
-                        (err2, results2, _fields) => {
-                            if (err2) throw err2;
-                            return console.log('admin ->>', [`id: ${results2.insertId}`, `username: ${process.env.ADMIN_USERNAME}`, `password: ${process.env.ADMIN_PASSWORD}`], '\n=================\n\n');
-                        }
-                    );
                 });
-            };
-            return console.log('admins ->>', results, '\n=================\n\n');
-        }
-    );
+                NEW_ADMIN.save()
+                    .then(admin => console.log('admin -->', admin))
+                    .catch(err => { throw err });
+            });
+        })
+        .catch(err => { throw err })
 };

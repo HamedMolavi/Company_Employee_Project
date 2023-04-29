@@ -11,12 +11,13 @@ const path = require('path');
 const express = require('express');
 const makeConnection = require('./database/connection');
 //------------------------------------------------------        Routes
-const loginRouter = require('./routes/login');
-const adminRouter = require('./routes/admin');
-const companyRouter = require('./routes/company');
-const employeeRouter = require('./routes/employee');
-const cookiesRouter = require('./routes/cookies');
-const dashboardRouter = require('./routes/dashboard');
+// const loginRouter = require('./routes/login');
+// const adminRouter = require('./routes/admin');
+// const companyRouter = require('./routes/company');
+// const employeeRouter = require('./routes/employee');
+// const cookiesRouter = require('./routes/cookies');
+// const dashboardRouter = require('./routes/dashboard');
+const test = require('./routes/test')
 //------------------------------------------------------        Express Instance
 const app = express();
 //------------------------------------------------------        Files
@@ -45,10 +46,6 @@ app.use(session({
     }
 }));
 
-app.use((req,res, next)=>{
-    console.log(req.session);
-    next()
-})
 //------------------------------------------------------        Setup logger
 app.use(logger('combined', {
     stream: accessLogStream,
@@ -58,14 +55,15 @@ app.use(logger('combined', {
 if (process.env.MODE === 'development') app.use(logger('dev'))
 //------------------------------------------------------        Assign Routes
 makeConnection()
-    .then(function (database) {
+    .then(function (models) {
         dlog("Database Connected.")
-        app.use('/login', loginRouter({ database }));
-        app.use('/company', companyRouter({ database }));
-        app.use('/employee', employeeRouter({ database }));
-        app.use('/admin', adminRouter({ database }));
-        app.use('/cookies', cookiesRouter({ database }));
-        app.use('/dashboard', dashboardRouter({ database }));
+        // app.use('/login', loginRouter({ models }));
+        // app.use('/company', companyRouter({ models }));
+        // app.use('/employee', employeeRouter({ models }));
+        // app.use('/admin', adminRouter({ models }));
+        // app.use('/cookies', cookiesRouter({ models }));
+        // app.use('/dashboard', dashboardRouter({ models }));
+        app.use('/test', test({ models }));
 
 
         // catch 404 and forward to error handler
