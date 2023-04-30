@@ -1,84 +1,88 @@
 const express = require('express');
 const router = express.Router();
-const { dbQueryPromise } = require('../database/queryPromises');
 const dlog = require('../utils/log').dlog(__filename);
 const errlog = require('../utils/log').errlog(__filename);
+const { searchByField } = require('../database/queries');
 
 
-module.exports = function ({ database }) {
+
+module.exports = function ({ models }) {
     //-------------
     // Get Companies
     //-------------
     router.get('/company', (req, res) => { // add priviliges using session
-        let searchQuery;
-        !!req.query.searchBy
-            // search among companies
-            ? searchQuery = [`
-            SELECT * FROM companies  WHERE 		id			LIKE '%${req.query.searchBy}%'
-                                        OR companyname		LIKE '%${req.query.searchBy}%'
-                                        OR registeredNumber	LIKE '%${req.query.searchBy}%'
-                                        OR city				LIKE '%${req.query.searchBy}%'
-                                        OR province			LIKE '%${req.query.searchBy}%'
-                                        OR tel				LIKE '%${req.query.searchBy}%'
-                                        OR website			LIKE '%${req.query.searchBy}%';`]
-            : !!req.query.id
-                // search by id
-                ? searchQuery = ['SELECT * FROM `companies` where `id`=? order by id', [req.query.id]]
-                // get all the companies
-                : searchQuery = ['SELECT * FROM `companies` order by id']
-        dbQueryPromise(database, searchQuery)
-            .then(result => {
-                result.success ? res.status(200).json(result) : res.status(404).end();
+        const { searchBy } = req.query;
+        (function () {
+            if (!!req.query.searchBy) return searchByField(models.Company, searchBy, ["companyname", "registeredNumber", "city", "province", "tel", "website"]);
+            else if (!!req.query.id) return models.Company.findById(req.query.id);
+            else return models.Company.find();
+        })()
+            .then((results) => { // returns an array for the first two and an object for the last one.
+                return !!results ? res.status(200).json(results) : res.status(404).end();
             })
-            .catch(err => {
-                errlog(`Reading from database\n`, err);
-                res.status(500).end();
+            .catch((err) => {
+                errlog(`Reading from database\n`);
+                errlog(err);
+                return res.status(500).end();
             });
-        ;
     });
 
 
     //-------------
     // Get Emplyees
     //-------------
+    // altimately sends employee(s) info along with their company(s) info, using inner join
     router.get('/employee', (req, res) => { // add priviliges using session
-        let searchQuery; // altimately sends employee(s) info along with their company(s) info, using inner join
-        !!req.query.searchBy
-            // search among employees
-            ? searchQuery = [`
-            SELECT emp.*, comp.companyname FROM employees	as emp join companies as comp on emp.id_companies = comp.id
-                                    WHERE	emp.id				LIKE '%${req.query.searchBy}%'
-                                    OR comp.companyname			LIKE '%${req.query.searchBy}%'
-                                    OR comp.registeredNumber	LIKE '%${req.query.searchBy}%'
-                                    OR comp.city				LIKE '%${req.query.searchBy}%'
-                                    OR comp.province			LIKE '%${req.query.searchBy}%'
-                                    OR emp.firstname			LIKE '%${req.query.searchBy}%'
-                                    OR emp.lastname				LIKE '%${req.query.searchBy}%'
-                                    OR emp.birthday				LIKE '%${req.query.searchBy}%'
-                                    OR emp.nationalID			LIKE '%${req.query.searchBy}%'
-                                    OR emp.gender				LIKE '%${req.query.searchBy}%'
-                                    OR emp.role					LIKE '%${req.query.searchBy}%';`]
-            : !!Object.values(req.query)[0] && !req.query.companyname && !req.query.id_company
-                // search by a key sent from client side
-                ? searchQuery = [`SELECT emp.*, comp.companyname FROM employees as emp join companies as comp on emp.id_companies = comp.id where emp.${Object.keys(req.query)[0]}=${req.query[Object.keys(req.query)[0]]} order by id`]
-                : !!req.query.companyname
-                    // search by company name
-                    ? searchQuery = ['SELECT emp.*, comp.companyname FROM employees as emp join companies as comp on emp.id_companies = comp.id where comp.companyname = ?', [req.query.companyname]]
-                    : !!req.query.id_company
-                        // search by company's id
-                        ? searchQuery = ['SELECT emp.*, comp.companyname FROM employees as emp join companies as comp on emp.id_companies = comp.id where comp.id = ?', [req.query.id_company]]
-                        // get all employees
-                        : searchQuery = ['SELECT emp.*, comp.companyname FROM `employees` as emp join companies as comp on emp.id_companies = comp.id'];
-
-        dbQueryPromise(database, searchQuery)
-            .then(result => {
-                result.success ? res.status(200).json(result) : res.status(404).end();
+        const { searchBy } = req.query;
+        models.Employee.aggregate([
+            {
+                $lookup: {
+                    from: "companies", // collection name in db
+                    localField: "id_companies",
+                    foreignField: "_id",
+                    as: "company"
+                }
+            },
+            {
+                $match: {
+                    $or: [
+                        { 'company.companyname': { $regex: RegExp(`.*${searchBy}.*`), $options: "i" } },
+                        { 'company.registeredNumber': { $regex: RegExp(`.*${searchBy}.*`), $options: "i" } },
+                        { 'company.city': { $regex: RegExp(`.*${searchBy}.*`), $options: "i" } },
+                        { 'company.province': { $regex: RegExp(`.*${searchBy}.*`), $options: "i" } },
+                        { 'firstname': { $regex: RegExp(`.*${searchBy}.*`), $options: "i" } },
+                        { 'lastname': { $regex: RegExp(`.*${searchBy}.*`), $options: "i" } },
+                        { 'birthday': { $regex: RegExp(`.*${searchBy}.*`), $options: "i" } },
+                        { 'nationalID': { $regex: RegExp(`.*${searchBy}.*`), $options: "i" } },
+                        { 'gender': { $regex: RegExp(`.*${searchBy}.*`), $options: "i" } },
+                        { 'role': { $regex: RegExp(`.*${searchBy}.*`), $options: "i" } },
+                    ]
+                }
+            }
+        ])
+            .then((results) => { // returns an array for the first two and an object for the last one.
+                return !!results ? res.status(200).json(results) : res.status(404).end();
             })
-            .catch(err => {
-                errlog(`Reading from database\n`, err);
-                res.status(500).end();
+            .catch((err) => {
+                errlog(`Reading from database\n`);
+                errlog(err)
+                return res.status(500).end();
             });
-        ;
+
+
+        /*
+    // search by a key sent from client side
+    !!Object.values(req.query)[0] && !req.query.companyname && !req.query.id_company
+        `{Object.keys(req.query)[0]}=${req.query[Object.keys(req.query)[0]]}`
+    // search by company name
+    !!req.query.companyname
+        `{companyname : req.query.companyname}`
+    // search by company's id
+    !!req.query.id_company
+        `{comp.id : req.query.id_company}`
+    // get all employees
+        find()
+        */
     });
 
     return router

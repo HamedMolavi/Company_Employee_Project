@@ -10,7 +10,6 @@ async function makeConnection() {
         const mongoURI = `mongodb://${prefix}${process.env.DATABASE_HOST ?? '127.0.0.1'}:${process.env.DATABASE_PORT ?? 27017}/${process.env.DATABASE_DATABASE ?? 'auth'}`
         await mongoose.connect(mongoURI);
         // Access models and return them all in one object;
-        console.log('COOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
         const models = {
             User: require('./models/user'),
             Employee: require('./models/employee'),
