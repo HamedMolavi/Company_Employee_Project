@@ -11,11 +11,13 @@ const creatCompanySchema = [
     },
     {
         name: "city",
-        required: true,
+        minlength: [3, "city is too short (more than 2 characters)."],
+        maxlength: [40, "city is too large (less than 40 characters)."],
     },
     {
         name: "province",
-        required: true,
+        minlength: [3, "province is too short (more than 2 characters)."],
+        maxlength: [40, "province is too large (less than 40 characters)."],
     },
     {
         name: "tel",
@@ -27,7 +29,6 @@ const creatCompanySchema = [
 const editCompanySchema = [
     {
         name: "companyname",
-        required: true,
         minlength: [2, "Username is too short (more than 2 characters)."],
     },
     {
@@ -36,15 +37,16 @@ const editCompanySchema = [
     },
     {
         name: "city",
-        required: true,
+        minlength: [3, "city is too short (more than 2 characters)."],
+        maxlength: [40, "city is too large (less than 40 characters)."],
     },
     {
         name: "province",
-        required: true,
+        minlength: [3, "province is too short (more than 2 characters)."],
+        maxlength: [40, "province is too large (less than 40 characters)."],
     },
     {
         name: "tel",
-        required: true,
         pattern: [/^\+?\d{1,}$/, "Invalid Format of Telephone."]
     }
 ];

@@ -1,6 +1,7 @@
-const { dbQueryPromise } = require('../database/queryPromises');
 const dlog = require('../utils/log').dlog(__filename);
 const errlog = require('../utils/log').errlog(__filename);
+
+
 
 // constructor of a custom error for validating
 const SchemaError = function (field, message) {
@@ -10,21 +11,22 @@ const SchemaError = function (field, message) {
 
 
 
-function validator(schema, db) {
+function validator(schema, models) {
     // returns a middleware with defaulted an schema and the database
     return async function (req, res, next) {
         const errors = []; // an array of errors through validating
         // checking privilidge validation -> should be done with session.
-        if (!req.session) return res.status(401).end();
-        await dbQueryPromise(db, ['SELECT id FROM `admins` where username=? and password=?', [req.session.user.username, req.session.user.password]])
-            .then((result) => {
-                if (!result.success) res.status(401).end();
-            })
-            .catch((err) => {
-                errlog(err);
-                return res.status(500).end();
-            });
-        ;
+        // if (!req.session.user) return res.status(401).end();
+        // await models.User.find({ username: req.session.user.username, password: req.session.user.password, role: 'admin' })
+        //     .then((result) => {
+        //         if (!result.success) res.status(401).end();
+        //     })
+        //     .catch((err) => {
+        //         errlog('Error in validating admin\n');
+        //         console.log(err);
+        //         return res.status(500).end();
+        //     });
+        // ;
         for (const schemaField of schema) { // each field in the schema
             const fieldValue = req.body[schemaField.name]; // value in request responsible for the schema field
             if (!fieldValue) {
@@ -55,18 +57,20 @@ function validator(schema, db) {
                 };
             };
             if (schemaField.type === 'id' && !!schemaField.ref) { // Checking null references
-                await dbQueryPromise(db, 'SELECT id FROM `' + schemaField.ref[0] + '` where id=' + req.body[schemaField.name])
+                await models[schemaField.ref].findById(req.body[schemaField.name])
                     .then((result) => {
                         if (!result.success) errors.push(new SchemaError(schemaField.name, schemaField.ref[1]));
                     })
                     .catch((err) => {
-                        errlog(err);
+                        errlog('Error in validating ref param.\n');
+                        console.log(err);
                         return res.status(500).end();
                     });
             };
         };
         if (errors.length !== 0) {
-            errlog(errors);
+            errlog('Validation errors:\n');
+            console.log(errors);
             return res.json({ success: false, message: errors[0].message }); // sending out the first error
         };
         next();

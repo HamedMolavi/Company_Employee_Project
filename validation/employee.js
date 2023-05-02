@@ -27,10 +27,10 @@ const creatEmployeeSchema = [
         enum: ['manager', 'employee']
     },
     {
-        name: "id_company",
+        name: "id_companies",
         required: true,
         type: "id",
-        ref: ["companies", "Company not found !"],
+        ref: ["Company", "Company not found !"],
     }
 ];
 

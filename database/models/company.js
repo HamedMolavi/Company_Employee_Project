@@ -10,6 +10,7 @@ const CompanySchema = new Schema({
     registeredNumber: {
         type: String,
         required: true,
+        unique: true
     },
     city: {
         type: String,
