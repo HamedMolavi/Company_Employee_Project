@@ -11,12 +11,12 @@ const path = require('path');
 const express = require('express');
 const makeConnection = require('./database/connection');
 //------------------------------------------------------        Routes
-// const loginRouter = require('./routes/login');
+const loginRouter = require('./routes/login');
 const adminRouter = require('./routes/admin');
 const companyRouter = require('./routes/company');
-// const employeeRouter = require('./routes/employee');
-// const cookiesRouter = require('./routes/cookies');
-// const dashboardRouter = require('./routes/dashboard');
+const employeeRouter = require('./routes/employee');
+const cookiesRouter = require('./routes/cookies');
+const dashboardRouter = require('./routes/dashboard');
 //------------------------------------------------------        Express Instance
 const app = express();
 //------------------------------------------------------        Files
@@ -56,12 +56,12 @@ if (process.env.MODE === 'development') app.use(logger('dev'))
 makeConnection()
     .then(function (models) {
         dlog("Database Connected.")
-        // app.use('/login', loginRouter({ models }));
+        app.use('/login', loginRouter({ models }));
         app.use('/company', companyRouter({ models }));
-        // app.use('/employee', employeeRouter({ models }));
+        app.use('/employee', employeeRouter({ models }));
         app.use('/admin', adminRouter({ models }));
-        // app.use('/cookies', cookiesRouter({ models }));
-        // app.use('/dashboard', dashboardRouter({ models }));
+        app.use('/cookies', cookiesRouter({ models }));
+        app.use('/dashboard', dashboardRouter({ models }));
 
 
         // catch 404 and forward to error handler

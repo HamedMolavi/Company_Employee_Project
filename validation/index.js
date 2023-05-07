@@ -57,9 +57,9 @@ function validator(schema, models) {
                 };
             };
             if (schemaField.type === 'id' && !!schemaField.ref) { // Checking null references
-                await models[schemaField.ref].findById(req.body[schemaField.name])
+                await models[schemaField.ref[0]].findById(req.body[schemaField.name])
                     .then((result) => {
-                        if (!result.success) errors.push(new SchemaError(schemaField.name, schemaField.ref[1]));
+                        if (!result) errors.push(new SchemaError(schemaField.name, schemaField.ref[1]));
                     })
                     .catch((err) => {
                         errlog('Error in validating ref param.\n');

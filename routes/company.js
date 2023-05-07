@@ -10,7 +10,6 @@ module.exports = function ({ models }) {
     // Creat Company
     //-------------
     router.post('/', validator(creatCompanySchema, models), (req, res) => { //
-        let now = new Date();
         models.Company.create({
             companyname: req.body.companyname,
             registeredNumber: req.body.registeredNumber,
@@ -33,7 +32,7 @@ module.exports = function ({ models }) {
     //-------------
     // Edit Company
     //-------------
-    router.post('/edit', validator(editCompanySchema, models), (req, res) => { //
+    router.put('', validator(editCompanySchema, models), (req, res) => { //
         let updateQuery = {
             companyname: req.body.companyname,
             tel: req.body.tel,
@@ -55,7 +54,7 @@ module.exports = function ({ models }) {
     //-------------
     // Delete Company
     //-------------
-    router.post('/delete', validator(deleteCompanySchema, models), (req, res) => { //
+    router.delete('', validator(deleteCompanySchema, models), (req, res) => { //
         models.Company.findByIdAndDelete(req.body.id)
             .then(result => result ? res.status(200).json(result) : res.status(404).end())
             .catch(err => {

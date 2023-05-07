@@ -25,7 +25,7 @@ const EmployeeSchema = new Schema({
         required: true
     },
     gender: {
-        type: Boolean,
+        type: String,
         default: 'male',
         enum: ['male', 'female', 'other']
     },

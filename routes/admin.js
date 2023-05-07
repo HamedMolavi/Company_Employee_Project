@@ -20,7 +20,7 @@ module.exports = function ({ models }) {
             })
             .catch((err) => {
                 errlog(`Reading from database\n`);
-                errlog(err);
+                console.log(err);
                 return res.status(500).end();
             });
     });
@@ -37,8 +37,16 @@ module.exports = function ({ models }) {
         const query = Object.keys(req.query)[0];
         (function () {
             if (!!req.query.searchBy) return searchByField(models.Employee, searchBy, fields, { lookup: 'companies' });
+            else if (!!req.query.id) return models.Employee.findById(req.query.id);
             else if (!!Object.values(req.query)[0]) return searchByField(models.Employee, req.query[Object.keys(req.query)[0]], !!companyFields.includes(query) ? 'companies.' + query : query, { lookup: 'companies' });
-            else return models.Employee.find();
+            else return models.Employee.aggregate([{
+                $lookup: {
+                    from: 'companies', // collection name in db
+                    localField: 'id_companies',
+                    foreignField: "_id",
+                    as: 'companies'
+                }
+            }]);
         })()
 
             .then((results) => { // returns an array for the first two and an object for the last one.
@@ -46,7 +54,7 @@ module.exports = function ({ models }) {
             })
             .catch((err) => {
                 errlog(`Reading from database\n`);
-                errlog(err)
+                console.log(err);
                 return res.status(500).end();
             });
 

@@ -1,0 +1,377 @@
+{
+	"info": {
+		"_postman_id": "5b11ffa9-ba7c-4b3b-901f-9a117ef30449",
+		"name": "comp_emp_mongo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27171260"
+	},
+	"item": [
+		{
+			"name": "cookies",
+			"item": [
+				{
+					"name": "add cookies",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"key1\": \"value1\",\r\n    \"key2\": \"value2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/cookies",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"cookies"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "get all companies",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/admin/company",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"admin",
+								"company"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search for companies",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/admin/company?searchBy=admincompany",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"admin",
+								"company"
+							],
+							"query": [
+								{
+									"key": "searchBy",
+									"value": "admincompany"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get company by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/admin/company?id=644d13a8fd267e46d1cf4307",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"admin",
+								"company"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "644d13a8fd267e46d1cf4307"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search for employees",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/admin/employee?searchBy=admincompany",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"admin",
+								"employee"
+							],
+							"query": [
+								{
+									"key": "searchBy",
+									"value": "admincompany"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search for employees with specific key",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/admin/employee?firstname=f",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"admin",
+								"employee"
+							],
+							"query": [
+								{
+									"key": "firstname",
+									"value": "f"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get employee by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/admin/employee?id=644d17e6fd267e46d1cf4311",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"admin",
+								"employee"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "644d17e6fd267e46d1cf4311"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "company",
+			"item": [
+				{
+					"name": "create company",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"companyname\": \"test\",\r\n    \"registeredNumber\": \"123456789\",\r\n    \"tel\": \"09130111111\",\r\n    \"city\": \"test\",\r\n\"province\": \"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/company",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"company"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit company",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"companyname\": \"test2\",\r\n    \"id\": \"645791039e71a4b31b8df54c\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/company/edit",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"company",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete company",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"645791039e71a4b31b8df54c\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/company",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"company"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "employee",
+			"item": [
+				{
+					"name": "create employee",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"id_companies\": \"644d13a8fd267e46d1cf4307\",\r\n\"firstname\": \"test\",\r\n\"lastname\": \"test\",\r\n\"birthday\": \"2020-05-15\",\r\n\"nationalID\": \"0123456789\",\r\n\"gender\": \"male\",\r\n\"role\": \"employee\",\r\n\"about\": \"lorum\"\r\n}// You can add \"avatar\": \"some url\"",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/employee",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"employee"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit employee",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"645799b6981b55e5c2aef308\",\r\n    \"id_companies\": \"64514c3274d77f2e157982bd\",\r\n    \"firstname\": \"test\",\r\n    \"lastname\": \"test\",\r\n    \"birthday\": \"2020-05-25\"\r\n} // You can add \"avatar\": \"some url\"",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/employee",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"employee"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete employee",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"645799b6981b55e5c2aef308\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/employee",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"employee"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
