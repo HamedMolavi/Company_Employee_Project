@@ -28,6 +28,7 @@ module.exports = function ({ models }) {
     router.post('/', (req, res) => {
         models.User.find({ username: req.body.username })
             .then(async result => {
+                result = result[0];
                 if (!!result) {
                     bcrypt.compare(req.body.password, result.password, function (err, exists) {
                         if (!!err) throw err
@@ -36,7 +37,7 @@ module.exports = function ({ models }) {
                         // admin exists
                         if (!!req.body.rememberMe) req.session.cookie.maxAge = 31536000000;
                         req.session.user = result;
-                        if (req.params.redirect === 'manual') return res.status(302).json({ url: '/dashboard' });
+                        if (req.query.redirect === 'manual') return res.status(302).json({ url: '/dashboard' });
                         return res.redirect('/dashboard');
                     });
                 } else return res.status(401).end();

@@ -372,6 +372,45 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "login",
+			"item": [
+				{
+					"name": "log in with username and password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"12345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/login?redirect=manual",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"login"
+							],
+							"query": [
+								{
+									"key": "redirect",
+									"value": "manual"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

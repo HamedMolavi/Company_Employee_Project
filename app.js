@@ -45,6 +45,11 @@ app.use(session({
     }
 }));
 
+app.use('', (req, res, next)=>{
+    console.log(req.session);
+    next();
+})
+
 //------------------------------------------------------        Setup logger
 app.use(logger('combined', {
     stream: accessLogStream,

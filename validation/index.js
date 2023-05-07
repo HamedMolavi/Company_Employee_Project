@@ -15,18 +15,9 @@ function validator(schema, models) {
     // returns a middleware with defaulted an schema and the database
     return async function (req, res, next) {
         const errors = []; // an array of errors through validating
-        // checking privilidge validation -> should be done with session.
-        // if (!req.session.user) return res.status(401).end();
-        // await models.User.find({ username: req.session.user.username, password: req.session.user.password, role: 'admin' })
-        //     .then((result) => {
-        //         if (!result.success) res.status(401).end();
-        //     })
-        //     .catch((err) => {
-        //         errlog('Error in validating admin\n');
-        //         console.log(err);
-        //         return res.status(500).end();
-        //     });
-        // ;
+        // checking privilidge validation
+        if (!req.session.user || req.session.user.role !== 'admin') return res.status(401).end();
+
         for (const schemaField of schema) { // each field in the schema
             const fieldValue = req.body[schemaField.name]; // value in request responsible for the schema field
             if (!fieldValue) {
