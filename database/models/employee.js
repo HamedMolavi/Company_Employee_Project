@@ -32,6 +32,9 @@ const EmployeeSchema = new Schema({
     role: {
         type: String,
     },
+    website: {
+        type: String,
+    },
     avatar: {
         type: String
     }

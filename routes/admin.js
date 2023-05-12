@@ -3,6 +3,7 @@ const router = express.Router();
 const dlog = require('../utils/log').dlog(__filename);
 const errlog = require('../utils/log').errlog(__filename);
 const { searchByField } = require('../database/queries');
+const { checkDBResult } = require('../tools/common');
 
 module.exports = function ({ models }) {
     //-------------
@@ -16,7 +17,7 @@ module.exports = function ({ models }) {
             else return models.Company.find();
         })()
             .then((results) => { // returns an array for the first two and an object for the last one.
-                return !!results ? res.status(200).json(results) : res.status(404).end();
+                return !!checkDBResult(results) ? res.status(200).json(results) : res.status(404).end();
             })
             .catch((err) => {
                 errlog(`Reading from database\n`);
@@ -37,7 +38,7 @@ module.exports = function ({ models }) {
         const query = Object.keys(req.query)[0];
         (function () {
             if (!!req.query.searchBy) return searchByField(models.Employee, searchBy, fields, { lookup: 'companies' });
-            else if (!!req.query.id) return models.Employee.findById(req.query.id);
+            else if (!!req.query.id) return searchByField(models.Employee, req.query.id, '_id', { lookup: 'companies' });//models.Employee.findById(req.query.id);
             else if (!!Object.values(req.query)[0]) return searchByField(models.Employee, req.query[Object.keys(req.query)[0]], !!companyFields.includes(query) ? 'companies.' + query : query, { lookup: 'companies' });
             else return models.Employee.aggregate([{
                 $lookup: {
@@ -50,7 +51,7 @@ module.exports = function ({ models }) {
         })()
 
             .then((results) => { // returns an array for the first two and an object for the last one.
-                return !!results ? res.status(200).json(results) : res.status(404).end();
+                return !!checkDBResult(results) ? res.status(200).json(!!req.query.id ? results[0] : results) : res.status(404).end();
             })
             .catch((err) => {
                 errlog(`Reading from database\n`);

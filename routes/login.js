@@ -11,7 +11,7 @@ module.exports = function ({ models }) {
             if (req.params.redirect === 'manual') return res.status(302).json({ url: '/dashboard' });
             return res.redirect('dashboard');
         };
-        return res.render('login');
+        return res.status(200).render('login');
     });
 
     router.get('/userInfo', (req, res) => {
@@ -20,8 +20,13 @@ module.exports = function ({ models }) {
             return res.redirect('login');
         };
         let results = req.session.user;
-        delete results['id'];
-        return res.json(results);
+        for (const key in results) {
+            if (Object.hasOwnProperty.call(results, key)) {
+                if (key.startsWith('_')) delete results[key];
+            };
+        };
+        delete results['password']
+        return res.status(200).json(results);
     });
 
 

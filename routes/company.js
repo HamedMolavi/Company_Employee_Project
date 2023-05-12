@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { validator } = require('../validation/index');
 const { creatCompanySchema, editCompanySchema, deleteCompanySchema } = require('../validation/company');
+const { checkDBResult } = require('../tools/common');
 const errlog = require('../utils/log').errlog(__filename);
+
+
 
 module.exports = function ({ models }) {
 
@@ -18,7 +21,7 @@ module.exports = function ({ models }) {
             province: req.body.province ?? null,
             avatar: req.body.avatar ?? '/Images/icons/companies/logo.png',
         })
-            .then(result => result ? res.status(200).json(result) : res.status(404).end())
+            .then(result => !!checkDBResult(result) ? res.status(200).json(result) : res.status(404).end())
             .catch(err => {
                 errlog(`Creating company failed ->\n`);
                 console.log(err);
@@ -42,7 +45,7 @@ module.exports = function ({ models }) {
         };
         if (!!req.body.registeredNumber) updateQuery.registeredNumber = req.body.registeredNumber;
         models.Company.findByIdAndUpdate(req.body.id, updateQuery)
-            .then(result => result ? res.status(200).json(result) : res.status(404).end())
+            .then(result => !!checkDBResult(result) ? res.status(200).json(result) : res.status(404).end())
             .catch(err => {
                 errlog(`Editing company failed ->\n`);
                 console.log(err);
@@ -55,8 +58,9 @@ module.exports = function ({ models }) {
     // Delete Company
     //-------------
     router.delete('', validator(deleteCompanySchema, models), (req, res) => { //
+        console.log(req.body.id);
         models.Company.findByIdAndDelete(req.body.id)
-            .then(result => result ? res.status(200).json(result) : res.status(404).end())
+            .then(result => !!checkDBResult(result) ? res.status(200).json(result) : res.status(404).end())
             .catch(err => {
                 errlog(`Deleting company failed ->\n`);
                 console.log(err);

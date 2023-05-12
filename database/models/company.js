@@ -12,6 +12,10 @@ const CompanySchema = new Schema({
         required: true,
         unique: true
     },
+    website: {
+        type: String,
+        required: true,
+    },
     city: {
         type: String,
     },
@@ -24,6 +28,10 @@ const CompanySchema = new Schema({
     },
     avatar: {
         type: String
+    },
+    createdAt: {
+        type: Date,
+        required: true
     }
 });
 

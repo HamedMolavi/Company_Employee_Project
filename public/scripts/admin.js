@@ -24,16 +24,15 @@ function load(mode, searchBy) {
         return;
     };
     let searchFetch = '/admin/' + mode;
+    if (!!searchBy) searchFetch += '?' + searchBy;
 
-    !!searchBy
-        ? searchFetch += '?' + searchBy
-        : null;
     fetch(searchFetch)
         .then(asyncreturnHttpResponse)
         .then(data => {
             arrangeTable(mode, data.results);
         })
         .catch(err => {
+            console.log(err);
             alert2("Something went Wrong :(", 'danger')
         });
     ;

@@ -1,5 +1,5 @@
-const { rgx } = require('../tools/common')
-
+const { rgx } = require('../tools/common');
+const Types = require('mongoose').Types;
 
 
 function searchByField(Model, searchBy, fields, options = {}) {
@@ -23,11 +23,13 @@ function searchByField(Model, searchBy, fields, options = {}) {
         for (const field of fields) {
             searchArray.push({ [field]: { $regex: searchRgx, $options: "i" } });
         };
+        aggArray.push({ $match: { $or: searchArray } });
+    } else if (fields === "_id") {
+        aggArray.push({ $match: { "_id": new Types.ObjectId(searchBy) } });
     } else {
         searchArray.push({ [fields]: { $regex: searchRgx, $options: "i" } });
+        aggArray.push({ $match: { $or: searchArray } });
     };
-    aggArray.push({ $match: { $or: searchArray } },);
-
 
     // Returning promise
     return new Promise((resolve, reject) => {

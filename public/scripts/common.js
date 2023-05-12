@@ -104,8 +104,8 @@ async function asyncreturnHttpResponse(response, options = { Redirect: 'follow' 
         case 200:
             if (response.redirected) response.status = 302;
             else {
-                res = await response.json();
-                return { success: true, ...res }
+                results = await response.json();
+                return { success: true, results };
             };
         case 301:
         case 302:

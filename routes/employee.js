@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { validator } = require('../validation/index');
 const { creatEmployeeSchema, editEmployeeSchema, deleteEmployeeSchema } = require('../validation/employee');
+const { checkDBResult } = require('../tools/common');
 const errlog = require('../utils/log').errlog(__filename);
 
 module.exports = function ({ models }) {
@@ -27,7 +28,7 @@ module.exports = function ({ models }) {
         });
         employee.save()
             .then(result => {
-                result ? res.status(200).json(result) : res.status(404).end();
+                !!checkDBResult(result) ? res.status(200).json(result) : res.status(404).end();
             })
             .catch(err => {
                 errlog(`Creating employee failed. ->\n`);
@@ -49,7 +50,7 @@ module.exports = function ({ models }) {
     router.delete('', validator(deleteEmployeeSchema, models), (req, res) => {
         models.Employee.findByIdAndDelete(req.body.id)
             .then(result => {
-                result ? res.status(200).json(result) : res.status(404).end();
+                !!checkDBResult(result) ? res.status(200).json(result) : res.status(404).end();
             })
             .catch(err => {
                 errlog(`Deleting employee failed. ->\n`);
@@ -77,7 +78,7 @@ module.exports = function ({ models }) {
             about: req.body.about,
         })
             .then(result => {
-                result ? res.status(200).json(result) : res.status(404).end();
+                !!checkDBResult(result) ? res.status(200).json(result) : res.status(404).end();
             })
             .catch(err => {
                 errlog('Reading from database ->\n')

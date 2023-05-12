@@ -5,7 +5,7 @@ function addEmployeeTableData(parent, data) {
     //================================================
     $('#youNeverSetThis').append(`
 <td class="text-start">
-    <span class="ps-3">${data.id}</span>
+    <span class="ps-3">${data._id}</span>
 </td>`);
     //================================================
     //              Name and Information
@@ -22,7 +22,7 @@ function addEmployeeTableData(parent, data) {
     //================================================
     $('#youNeverSetThis').append(`
     <td class="text-center">
-        <a href="javascript:load('employee', 'companyname=${data.companyname}');">${data.companyname}</a>
+        <a href="javascript:load('employee', 'companyname=${data.companies[0].companyname}');">${data.companies[0].companyname}</a>
     </td>
     <td class="text-center">
         <span class="label label-${day ? 'primary' : 'default'}">${data.nationalID}</span>
@@ -34,7 +34,7 @@ function addEmployeeTableData(parent, data) {
     //================================================
     $('#youNeverSetThis').append(`
     <td class="text-end pe-4 d-flex justify-content-center">
-    <div id="info-${data.id}" class="email" onclick="this.classList.add('expand')">
+    <div id="info-${data._id}" class="email" onclick="this.classList.add('expand')">
     <div class="from">
         <div class="from-contents">
             <a href="#" class="table-link text-warning">
@@ -53,7 +53,7 @@ function addEmployeeTableData(parent, data) {
                 </div>
                 <div class="name-large">${data.firstname} ${data.lastname}</div>
                 <div class="x-touch"
-                    onclick="$('#info-${data.id}').removeClass('expand');event.stopPropagation();">
+                    onclick="$('#info-${data._id}').removeClass('expand');event.stopPropagation();">
                     <div class="x">
                         <div class="line1"></div>
                         <div class="line2"></div>
@@ -70,13 +70,13 @@ function addEmployeeTableData(parent, data) {
         </div>
     </div>
 </div>
-        <a href="javascript:openEmployeeModal(${data.id});" class="table-link text-info">
+        <a href="javascript:openEmployeeModal('${data._id}');" class="table-link text-info">
             <span class="fa-stack">
                 <i class="fa fa-square fa-stack-2x"></i>
                 <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
             </span>
         </a>
-        <a href="javascript:deleteThis(${data.id}, 'employee');" class="table-link danger">
+        <a href="javascript:deleteThis('${data._id}', 'employee');" class="table-link danger">
             <span class="fa-stack">
                 <i class="fa fa-square fa-stack-2x"></i>
                 <i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
@@ -85,5 +85,5 @@ function addEmployeeTableData(parent, data) {
     </td>
 `);
 
-    $('#youNeverSetThis').attr('id', data.id);
+    $('#youNeverSetThis').attr('id', data._id);
 };

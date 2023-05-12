@@ -13,13 +13,13 @@ function openCompanyModal(companyID) {
     fetch('/admin/company?id=' + companyID)
         .then(asyncreturnHttpResponse)
         .then(data => {
-            $('#companynameEdit').val(data.results[0].companyname);
-            $('#registeredNumberEdit').val(data.results[0].registeredNumber);
-            $('#cityEdit').val(data.results[0].city);
-            $('#provinceEdit').val(data.results[0].province);
-            $('#telEdit').val(data.results[0].tel);
-            $('#avatarFile').attr('src', data.results[0].avatar);
-            $('#submitCompanyBtn').attr('onclick', `editThis(${data.results[0].id}, 'company')`);
+            $('#companynameEdit').val(data.results.companyname);
+            $('#registeredNumberEdit').val(data.results.registeredNumber);
+            $('#cityEdit').val(data.results.city);
+            $('#provinceEdit').val(data.results.province);
+            $('#telEdit').val(data.results.tel);
+            $('#avatarFile').attr('src', data.results.avatar);
+            $('#submitCompanyBtn').attr('onclick', `editThis('${data.results._id}', 'company')`);
             $('#companyModal').addClass('top-0');
         })
         .catch(err => {
@@ -33,19 +33,20 @@ function openEmployeeModal(employeeID) {
     fetch('/admin/employee?id=' + employeeID)
         .then(asyncreturnHttpResponse)
         .then(data => {
-            $('#employeeCompanynameEdit').val(data.results[0].companyname);
-            $('#employeeFirstnameEdit').val(data.results[0].firstname);
-            $('#employeeLastnameEdit').val(data.results[0].lastname);
-            $('#employeeBirthdayEdit').val(data.results[0].birthday.slice(0, 10));
-            $('#employeeNationalIDEdit').val(data.results[0].nationalID);
-            $('#employeeAboutEdit').val(data.results[0].about);
-            $('#employeeAvatarFile').attr('src', data.results[0].avatar);
-            $('#submitEmployeeBtn').attr('onclick', `editThis(${data.results[0].id}, 'employee')`);
-            data.results[0].role === 'employee' ? $('#employeeCheck').prop('checked', true) : $('#managerCheck').prop('checked', true);
-            data.results[0].gender === 'male' ? $('#maleCheck').prop('checked', true) : $('#femaleCheck').prop('checked', true);
+            $('#employeeCompanynameEdit').val(data.results.companies[0].companyname);
+            $('#employeeFirstnameEdit').val(data.results.firstname);
+            $('#employeeLastnameEdit').val(data.results.lastname);
+            $('#employeeBirthdayEdit').val(data.results.birthday.slice(0, 10));
+            $('#employeeNationalIDEdit').val(data.results.nationalID);
+            $('#employeeAboutEdit').val(data.results.about);
+            $('#employeeAvatarFile').attr('src', data.results.avatar);
+            $('#submitEmployeeBtn').attr('onclick', `editThis('${data.results._id}', 'employee')`);
+            data.results.role === 'employee' ? $('#employeeCheck').prop('checked', true) : $('#managerCheck').prop('checked', true);
+            data.results.gender === 'male' ? $('#maleCheck').prop('checked', true) : $('#femaleCheck').prop('checked', true);
             $('#employeeModal').addClass('top-0');
         })
         .catch(err => {
+            console.log(err);
             alert2("Something went Wrong :(", 'danger')
         });
     ;
@@ -91,30 +92,31 @@ async function editThis(id, mode) {
             registeredNumber: $('#registeredNumberEdit').val(),
             province: $('#provinceEdit').val(),
             city: $('#cityEdit').val(),
-            avatar: $('#avatarEdit').val(),
+            avatar: !$('#avatarEdit').val() ? '/Images/icons/companies/logo.png' : $('#avatarEdit').val(),
             tel: $('#telEdit').val()
         };
     } else if (mode === 'employee') {
-        let response = await fetch('/admin/company?searchBy=' + $('#employeeCompanynameEdit').val());
-        let result = await response.json();
-        if (!result.success) {
-            return alert('The company you entered does not exist !', 'danger');
-        }
-        data = {
-            id,
-            companyname: result.results[0].id,
-            firstname: $('#employeeFirstnameEdit').val(),
-            lastname: $('#employeeLastnameEdit').val(),
-            birthday: $('#employeeBirthdayEdit').val(),
-            nationalID: $('#employeeNationalIDEdit').val(),
-            about: $('#employeeAboutEdit').val(),
-            avatar: $('#employeeAvatarEdit').val(),
-            role: $('#employeeCheck').is(':checked') ? 'employee' : 'manager',
-            gender: $('#maleCheck').is(':checked') ? 'male' : 'female',
-        };
+        data = await fetch('/admin/company?searchBy=' + $('#employeeCompanynameEdit').val())
+            .then(asyncreturnHttpResponse)
+            .then((result) => !result.success ? alert('The company you entered does not exist !', 'danger') : result.results[0])
+            .then((result) => !result ? undefined
+                : {
+                    id,
+                    id_companies: result._id,
+                    firstname: $('#employeeFirstnameEdit').val(),
+                    lastname: $('#employeeLastnameEdit').val(),
+                    birthday: $('#employeeBirthdayEdit').val(),
+                    nationalID: $('#employeeNationalIDEdit').val(),
+                    about: $('#employeeAboutEdit').val(),
+                    avatar: $('#employeeAvatarEdit').val(),
+                    role: $('#employeeCheck').is(':checked') ? 'employee' : 'manager',
+                    gender: $('#maleCheck').is(':checked') ? 'male' : 'female',
+                }
+            );
     };
-    fetch(`/${mode}/edit`, {
-        method: 'POST',
+    if (!data) return;
+    fetch(`/${mode}`, {
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -128,7 +130,7 @@ async function editThis(id, mode) {
                 $(`#${mode}Modal`).removeClass('top-0');
                 return setTimeout(() => clearModal(`${mode}Modal`), 250);
             };
-            alert(data.message, 'danger');
+            alert("Something went wrong!", 'danger');
         })
         .catch((error) => {
             alert2("Something went Wrong :(", 'danger')
@@ -141,12 +143,10 @@ function deleteThis(id, mode) {
         () => {
             return new Promise((resolve, reject) => {
                 let data = {
-                    id,
-                    username: localStorage.username,
-                    password: localStorage.password
+                    id
                 };
-                fetch(`/${mode}/delete`, {
-                    method: 'POST',
+                fetch(`/${mode}`, {
+                    method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                     },

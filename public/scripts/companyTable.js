@@ -5,7 +5,7 @@ function addCompanyTableData(parent, data) {
     //================================================
     $('#youNeverSetThis').append(`
 <td class="text-start">
-    <span class="ps-3">${data.id}</span>
+    <span class="ps-3">${data._id}</span>
 </td>`);
     //================================================
     //              Name and Information
@@ -51,13 +51,13 @@ function addCompanyTableData(parent, data) {
         <ul class="list-unstyled mb-0 d-flex justify-content-end">
             <li><a href="javascript:load('employee', 'companyname=${data.companyname}');" class="text-primary" data-toggle="tooltip" title=""
                     data-original-title="view"><i class="far fa-eye"></i></a></li>
-            <li><a href="javascript:openCompanyModal(${data.id});" class="text-info" data-toggle="tooltip" title=""
+            <li><a href="javascript:openCompanyModal('${data._id}');" class="text-info" data-toggle="tooltip" title=""
                     data-original-title="Edit"><i class="fas fa-pencil-alt"></i></a></li>
-            <li><a href="javascript:deleteThis(${data.id}, 'company');" class="text-danger" data-toggle="tooltip" title=""
+            <li><a href="javascript:deleteThis('${data._id}', 'company');" class="text-danger" data-toggle="tooltip" title=""
                     data-original-title="Delete"><i class="far fa-trash-alt"></i></a></li>
         </ul>
     </td>
 `);
 
-    $('#youNeverSetThis').attr('id', data.id);
+    $('#youNeverSetThis').attr('id', data._id);
 };

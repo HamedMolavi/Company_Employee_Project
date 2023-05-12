@@ -34,10 +34,10 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-store = redisStoreConnect()
+let store = redisStoreConnect()
 app.use(session({
     store,
-    secret: process.env.SECRET,
+    secret: process.env.SECRET || 'myS3cR31',
     resave: true,
     saveUninitialized: false,
     cookie: {
@@ -45,10 +45,10 @@ app.use(session({
     }
 }));
 
-app.use('', (req, res, next)=>{
-    console.log(req.session);
-    next();
-})
+// app.use('', (req, _res, next) => {
+//     console.log(req.session.user);
+//     next();
+// })
 
 //------------------------------------------------------        Setup logger
 app.use(logger('combined', {
@@ -84,6 +84,8 @@ makeConnection()
 
 errorHandler = function (err, req, res, _next) {
     // set locals, only providing error in development
+    errlog("Error:");
+    console.log(err);
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
