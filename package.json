@@ -1,5 +1,5 @@
 {
-  "name": "company_employee_list",
+  "name": "company_employee_project",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -23,6 +23,7 @@
     "mongoose": "^7.0.5",
     "morgan": "^1.9.1",
     "mysql2": "^2.3.3",
+    "nodemon": "^2.0.22",
     "rotating-file-stream": "^2.1.6"
   }
 }

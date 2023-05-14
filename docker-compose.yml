@@ -1,0 +1,18 @@
+version: '3'
+services:
+    web: 
+        build:
+            context: .
+        ports:
+            - "3000:3000"
+        volumes:
+            - "./:/code"
+    mongo:
+        image: "mongo:4.4.21-rc0-focal"
+        volumes:
+            - "D:/mongoDocker:/data/db:rw"
+    redis:
+        image: "redis:latest"
+
+volumes:
+    mongodb: null

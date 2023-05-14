@@ -5,7 +5,7 @@ const errlog = require('./log').errlog(__filename);
 
 function redisStoreConnect() {
     try {
-        let redisClient = createClient()
+        let redisClient = createClient(process.env.REDIS_PORT ?? 6379, process.env.REDIS_HOST ?? "127.0.0.1");
         // Initialize store.
         let redisStore = new RedisStore({
             client: redisClient,
