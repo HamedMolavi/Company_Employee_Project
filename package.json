@@ -22,6 +22,7 @@
     "ioredis": "^5.2.2",
     "mongoose": "^7.0.5",
     "morgan": "^1.9.1",
+    "multer": "^1.4.5-lts.1",
     "mysql2": "^2.3.3",
     "nodemon": "^2.0.22",
     "rotating-file-stream": "^2.1.6"

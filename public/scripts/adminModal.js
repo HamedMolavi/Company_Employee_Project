@@ -13,12 +13,14 @@ function openCompanyModal(companyID) {
     fetch('/admin/company?id=' + companyID)
         .then(asyncreturnHttpResponse)
         .then(data => {
-            $('#companynameEdit').val(data.results.companyname);
-            $('#registeredNumberEdit').val(data.results.registeredNumber);
-            $('#cityEdit').val(data.results.city);
-            $('#provinceEdit').val(data.results.province);
-            $('#telEdit').val(data.results.tel);
-            $('#avatarFile').attr('src', data.results.avatar);
+            let altsrc = '/Images/icons/companies/logo.png';
+            $('#companyCompanynameEdit').val(data.results.companyname);
+            $('#companyRegisteredNumberEdit').val(data.results.registeredNumber);
+            $('#companyCityEdit').val(data.results.city);
+            $('#companyProvinceEdit').val(data.results.province);
+            $('#companyTelEdit').val(data.results.tel);
+            $('#companyAvatarEdit').attr('src', data.results.avatar);
+            $('#companyAvatarFile').attr('src', data.results.avatar || altsrc);
             $('#submitCompanyBtn').attr('onclick', `editThis('${data.results._id}', 'company')`);
             $('#companyModal').addClass('top-0');
         })
@@ -33,13 +35,14 @@ function openEmployeeModal(employeeID) {
     fetch('/admin/employee?id=' + employeeID)
         .then(asyncreturnHttpResponse)
         .then(data => {
+            let altsrc = `/Images/icons/employees/${data.results.gender === 'male' ? 'man-icon.png' : 'woman-icon.png'}`;
             $('#employeeCompanynameEdit').val(data.results.companies[0].companyname);
             $('#employeeFirstnameEdit').val(data.results.firstname);
             $('#employeeLastnameEdit').val(data.results.lastname);
             $('#employeeBirthdayEdit').val(data.results.birthday.slice(0, 10));
             $('#employeeNationalIDEdit').val(data.results.nationalID);
             $('#employeeAboutEdit').val(data.results.about);
-            $('#employeeAvatarFile').attr('src', data.results.avatar);
+            $('#employeeAvatarFile').attr('src', data.results.avatar || altsrc);
             $('#submitEmployeeBtn').attr('onclick', `editThis('${data.results._id}', 'employee')`);
             data.results.role === 'employee' ? $('#employeeCheck').prop('checked', true) : $('#managerCheck').prop('checked', true);
             data.results.gender === 'male' ? $('#maleCheck').prop('checked', true) : $('#femaleCheck').prop('checked', true);
@@ -56,12 +59,12 @@ function openEmployeeModal(employeeID) {
 
 function clearModal(id) {
     if (!!id.match('company')) {
-        $('#companynameEdit').val('');
-        $('#registeredNumberEdit').val('');
-        $('#cityEdit').val('');
-        $('#provincdEdit').val('');
-        $('#telEdit').val('');
-        $('#avatarEdit').attr('src', '/Images/icons/companies/logo.png');
+        $('#companyCompanynameEdit').val('');
+        $('#companyRegisteredNumberEdit').val('');
+        $('#companyCityEdit').val('');
+        $('#companyProvinceEdit').val('');
+        $('#companyTelEdit').val('');
+        $('#companyAvatarEdit').attr('src', '/Images/icons/companies/logo.png');
         $('#submitCompanyBtn').attr('onclick', ``);
         return;
     };
@@ -84,16 +87,34 @@ function clearModal(id) {
 
 
 async function editThis(id, mode) {
-    let data;
+    let data = {};
+    try {
+        if (!!$(`#${mode}AvatarEdit`).val()) {
+            let fd = new FormData();
+            fd.append('avatar', $(`#${mode}AvatarEdit`)[0].files[0]);
+            var avatar = await fetch('/uploads/images/avatar', {
+                method: 'POST',
+                headers: {
+                    'Accept': '*/*'
+                },
+                body: fd
+            }).then(asyncreturnHttpResponse)
+                .then(result => {
+                    if (!result.success) throw new Error();
+                    return result.results;
+                });
+        };
+    } catch (error) {
+        return alert2("Something went wrong :(", 'danger');
+    };
     if (mode === 'company') {
         data = {
             id,
-            companyname: $('#companynameEdit').val(),
-            registeredNumber: $('#registeredNumberEdit').val(),
-            province: $('#provinceEdit').val(),
-            city: $('#cityEdit').val(),
-            avatar: !$('#avatarEdit').val() ? '/Images/icons/companies/logo.png' : $('#avatarEdit').val(),
-            tel: $('#telEdit').val()
+            companyname: $('#companyCompanynameEdit').val(),
+            registeredNumber: $('#companyRegisteredNumberEdit').val(),
+            province: $('#companyProvinceEdit').val(),
+            city: $('#companyCityEdit').val(),
+            tel: $('#companyTelEdit').val()
         };
     } else if (mode === 'employee') {
         data = await fetch('/admin/company?searchBy=' + $('#employeeCompanynameEdit').val())
@@ -108,13 +129,13 @@ async function editThis(id, mode) {
                     birthday: $('#employeeBirthdayEdit').val(),
                     nationalID: $('#employeeNationalIDEdit').val(),
                     about: $('#employeeAboutEdit').val(),
-                    avatar: $('#employeeAvatarEdit').val(),
                     role: $('#employeeCheck').is(':checked') ? 'employee' : 'manager',
                     gender: $('#maleCheck').is(':checked') ? 'male' : 'female',
                 }
             );
     };
     if (!data) return;
+    if (!!avatar) data['avatar'] = 'uploads/images/' + avatar;
     fetch(`/${mode}`, {
         method: 'PUT',
         headers: {
@@ -125,6 +146,7 @@ async function editThis(id, mode) {
         .then(asyncreturnHttpResponse)
         .then((data) => {
             if (!!data.success) {
+
                 alert2(`${mode} editted successfully :)`, 'success');
                 load(mode);
                 $(`#${mode}Modal`).removeClass('top-0');
@@ -137,6 +159,9 @@ async function editThis(id, mode) {
         });
 };
 
+function updateAvatar(val) {
+
+};
 
 function deleteThis(id, mode) {
     confirm(["Careful...!", `Are you sure you want to delete this ${mode}'s data?`, "deleting faild :(", 'danger'],

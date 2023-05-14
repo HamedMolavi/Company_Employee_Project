@@ -71,7 +71,8 @@ function closeAlert() {
 
 };
 
-function alert2(message, alertClass) {
+function alert2(message, alertClass, err= "") {
+    if (!!err) console.log(err);
     clearTimeout(myTimeout2);
     $('#alert2').addClass('active2');
     $('#alert2').addClass(`bg-${alertClass}`);

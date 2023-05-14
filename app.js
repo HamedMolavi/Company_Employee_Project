@@ -17,6 +17,7 @@ const companyRouter = require('./routes/company');
 const employeeRouter = require('./routes/employee');
 const cookiesRouter = require('./routes/cookies');
 const dashboardRouter = require('./routes/dashboard');
+const uploadRouter = require('./routes/upload');
 //------------------------------------------------------        Express Instance
 const app = express();
 //------------------------------------------------------        Files
@@ -32,7 +33,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 //------------------------------------------------------        Parsing
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 let store = redisStoreConnect()
 app.use(session({
@@ -67,7 +68,7 @@ makeConnection()
         app.use('/admin', adminRouter({ models }));
         app.use('/cookies', cookiesRouter({ models }));
         app.use('/dashboard', dashboardRouter({ models }));
-
+        app.use('/uploads', uploadRouter({ models }));
 
         // catch 404 and forward to error handler
         app.use(function (_req, _res, next) {
@@ -91,7 +92,7 @@ errorHandler = function (err, req, res, _next) {
 
     // render the error page
     res.status(err.status || 500);
-    res.render('error');
+    res.send('error');
 }
 
 module.exports = app;
